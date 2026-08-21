@@ -76,7 +76,7 @@
 <button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button>
 <span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
 </label>
-<span class="mode-help hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Turn this on to see which letters match. Leave it off for the full challenge.</span>
+<span id="mode-help" class="mode-help max-w-[220px] text-right text-[11px] leading-snug text-slate-500">In Hard Mode, tap submitted tiles to mark them yellow or green.</span>
 </div>
 <div class="flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
@@ -218,7 +218,7 @@ function fallbackWordForDate(dateStr) {
   for (let i = 0; i < dateStr.length; i++) hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
   return ANSWER_WORDS[hash % ANSWER_WORDS.length];
 }
-let state = { target: "", targetLetters: [], row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), hintsUsed: 0, hintedLetters: {} };
+let state = { target: "", targetLetters: [], row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
 let sessionStats = { played: 0, wins: 0, streak: 0, maxStreak: 0, hintsUsed: 0 };
 function scoreGuess(guessArr, targetArr) {
   const target = targetArr.slice(), guess = guessArr.slice();
@@ -243,6 +243,9 @@ function setEasyMode(on) {
   easyModeToggle.classList.toggle("bg-slate-700", !on);
   easyModeKnob.classList.toggle("translate-x-4", on);
   easyModeKnob.classList.toggle("translate-x-0.5", !on);
+  document.getElementById("mode-help").textContent = on
+    ? "Easy Mode shows which letters match."
+    : "In Hard Mode, tap submitted tiles to mark them yellow or green.";
   // Toggling mid-game must retroactively recolor every already-submitted
   // row and the keyboard. Hard Mode shows no real feedback, only
   // the aggregate sidebar counts.
@@ -378,6 +381,16 @@ function buildGrid() {
       const tile = document.createElement("div");
       tile.id = `tile-${r}-${c}`;
       tile.className = "grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl border-2 border-slate-700 text-[22px] font-semibold uppercase tracking-tight text-slate-50 transition-colors duration-150";
+      tile.setAttribute("role", "button");
+      tile.tabIndex = -1;
+      tile.setAttribute("aria-label", `Empty tile ${c + 1}`);
+      tile.addEventListener("click", () => cycleManualMark(r, c));
+      tile.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          cycleManualMark(r, c);
+        }
+      });
       rowEl.appendChild(tile);
     }
     grid.appendChild(rowEl);
@@ -397,9 +410,18 @@ function buildSidebar() {
 function renderTile(row, col, letter, mode) {
   const tile = document.getElementById(`tile-${row}-${col}`);
   tile.textContent = letter;
+  tile.setAttribute("aria-label", letter ? `${letter}, current guess` : `Empty tile ${col + 1}`);
   if (mode === "filled") { tile.classList.add("border-slate-400", "bg-slate-800", "animate-pop"); tile.classList.remove("border-slate-700", "border-yellow-400", "bg-yellow-400/10"); }
   else if (mode === "hint") { tile.classList.add("border-yellow-400", "bg-yellow-400/10", "animate-pop"); tile.classList.remove("border-slate-700", "border-slate-400", "bg-slate-800"); }
   else { tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10"); tile.classList.add("border-slate-700"); }
+}
+function manualMarkKey(row, col) { return `${row}-${col}`; }
+function cycleManualMark(row, col) {
+  if (easyMode || !state.submittedRows.has(row)) return;
+  const key = manualMarkKey(row, col);
+  const current = state.manualMarks[key] || "gray";
+  state.manualMarks[key] = current === "gray" ? "yellow" : current === "yellow" ? "green" : "gray";
+  finalizeRow(row, state.guesses[row]?.letterResult || []);
 }
 // Rebuilds the full result-color class set from scratch every time
 // instead of patching an already changed class list. A partial
@@ -408,7 +430,7 @@ function renderTile(row, col, letter, mode) {
 // removal list. Same bug class as any "two colors fighting over cascade
 // order" issue: always fully clear every possible color class first.
 function finalizeRow(row, letterResult) {
-  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700"];
+  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700", "cursor-pointer"];
   for (let c = 0; c < WORD_LENGTH; c++) {
     const tile = document.getElementById(`tile-${row}-${c}`);
     if (!tile) continue;
@@ -418,10 +440,15 @@ function finalizeRow(row, letterResult) {
       if (status === "correct") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key");
       else if (status === "present") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key");
       else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
+      tile.tabIndex = -1;
+      tile.setAttribute("aria-label", `${tile.textContent}, ${status}`);
     } else {
-      // Hard Mode shows no real per-letter feedback, only the
-      // aggregate sidebar counts. Tiles settle to neutral.
-      tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
+      const mark = state.manualMarks[manualMarkKey(row, c)] || "gray";
+      if (mark === "yellow") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else if (mark === "green") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key", "cursor-pointer");
+      tile.tabIndex = 0;
+      tile.setAttribute("aria-label", `${tile.textContent}, marked ${mark}. Activate to change the mark.`);
     }
   }
 }
@@ -717,7 +744,7 @@ backdrop.addEventListener("click", closeModals);
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
 async function startNewGame() {
   const target = await fetchDailyWord();
-  state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), hintsUsed: 0, hintedLetters: {} };
+  state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
   const existing = await fetchTodaysCompletedGame();

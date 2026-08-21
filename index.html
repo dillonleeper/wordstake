@@ -117,6 +117,7 @@
 <input id="signin-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <input id="signin-referral" type="text" placeholder="Referral code (optional)" autocomplete="off" class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] uppercase text-slate-100 outline-none transition placeholder:normal-case placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <p id="signin-error" class="hidden text-center text-[12px] leading-relaxed text-red-400"></p>
+<p id="signin-success" class="hidden rounded-xl border border-brand-400/20 bg-brand-500/10 px-3.5 py-3 text-center text-[13px] leading-relaxed text-brand-300"></p>
 <button id="signin-submit" type="submit" class="mt-1 rounded-full bg-brand-500 px-3.5 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Sign In</button>
 <button id="signin-toggle-mode" type="button" class="mt-1 text-center text-[12px] leading-relaxed text-slate-500 transition hover:text-slate-300">New here? Create an account</button>
 <p class="mt-1 text-center text-[11px] leading-relaxed text-slate-600">By continuing, you agree to our <a href="/terms.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Terms</a> and <a href="/privacy.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Privacy Policy</a>.</p>
@@ -555,6 +556,7 @@ function setSigninMode(mode) {
   identifier.placeholder = mode === "signup" ? "Email" : "Username or email";
   identifier.autocomplete = mode === "signup" ? "email" : "username";
   document.getElementById("signin-error").classList.add("hidden");
+  document.getElementById("signin-success").classList.add("hidden");
 }
 async function signInWithIdentifier(identifier, password) {
   const response = await fetch(`${SUPABASE_URL}/functions/v1/username-login`, {
@@ -587,13 +589,22 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
   const password = document.getElementById("signin-password").value;
   const username = document.getElementById("signin-username").value.trim();
   const errorEl = document.getElementById("signin-error");
+  const successEl = document.getElementById("signin-success");
   const submitBtn = document.getElementById("signin-submit");
   errorEl.classList.add("hidden");
+  successEl.classList.add("hidden");
   submitBtn.disabled = true;
   try {
     if (signinMode === "signup") {
       if (!username) throw new Error("Pick a username");
-      const { data, error } = await sbClient.auth.signUp({ email: identifier, password, options: { data: { username } } });
+      const { data, error } = await sbClient.auth.signUp({
+        email: identifier,
+        password,
+        options: {
+          data: { username },
+          emailRedirectTo: `${location.origin}/`
+        }
+      });
       if (error) throw error;
       const referral = document.getElementById("signin-referral").value || new URLSearchParams(location.search).get("ref");
       if (referral) {
@@ -603,7 +614,14 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
         }
         else localStorage.setItem("wordstake_pending_referral", referral.trim().toUpperCase());
       }
-      showToast("Account created! Check your email if confirmation is required.");
+      if (!data.session) {
+        document.getElementById("signin-password").value = "";
+        successEl.textContent = `Account created. Check ${identifier} for a confirmation email, then come back and sign in. Your referral bonus is saved.`;
+        successEl.classList.remove("hidden");
+        submitBtn.textContent = "Send Again";
+        return;
+      }
+      showToast("Account created!");
     } else {
       await signInWithIdentifier(identifier, password);
       showToast("Signed in!");

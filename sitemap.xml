@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Starter sitemap. Replace REPLACE_WITH_DOMAIN, then add one <url> entry
-  per daily-answer page as you publish them (see the launch strategy doc,
-  "Phase 2: the daily-answer content engine"). Resubmit in Google Search
-  Console after any batch of new URLs — GSC also lets you set up an
-  auto-fetch schedule so you don't have to resubmit manually every day.
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://REPLACE_WITH_DOMAIN/</loc>
+    <loc>https://word-stake.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!--
   <url>
-    <loc>https://REPLACE_WITH_DOMAIN/answers/2026-08-20</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>never</changefreq>
-    <priority>0.6</priority>
+    <loc>https://word-stake.com/privacy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
-  -->
+  <url>
+    <loc>https://word-stake.com/terms.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

@@ -523,12 +523,16 @@ function setSigninMode(mode) {
   identifier.autocomplete = mode === "signup" ? "email" : "username";
   document.getElementById("signin-error").classList.add("hidden");
 }
-async function resolveLoginEmail(identifier) {
-  if (identifier.includes("@")) return identifier;
-  const { data, error } = await sbClient.rpc("get_email_for_username", { p_username: identifier });
+async function signInWithIdentifier(identifier, password) {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/username-login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify({ identifier, password })
+  });
+  const result = await response.json();
+  if (!response.ok || !result.session) throw new Error(result.error || "Sign-in failed");
+  const { error } = await sbClient.auth.setSession(result.session);
   if (error) throw error;
-  if (!data) throw new Error("No account found for that username");
-  return data;
 }
 async function redeemReferral(code) {
   if (!code) return;
@@ -568,9 +572,7 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
       }
       showToast("Account created! Check your email if confirmation is required.");
     } else {
-      const email = await resolveLoginEmail(identifier);
-      const { error } = await sbClient.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      await signInWithIdentifier(identifier, password);
       showToast("Signed in!");
     }
     await checkSession();

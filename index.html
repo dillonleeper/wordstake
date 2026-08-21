@@ -83,6 +83,8 @@
 <div id="sidebar" class="flex flex-col gap-2"></div>
 </div>
 <div id="keyboard" class="mt-1 flex w-full max-w-lg flex-col items-center gap-2"></div>
+<input id="mobile-guess-input" class="mobile-guess-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Type your guess" />
+<p id="mobile-input-help" class="mobile-input-help text-center text-[11px] leading-snug text-slate-500">Tap the grid to type. Tap submitted tiles to mark them.</p>
 <div id="post-game" class="hidden w-full max-w-lg flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-glass backdrop-blur-xl animate-rise">
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
@@ -384,11 +386,11 @@ function buildGrid() {
       tile.setAttribute("role", "button");
       tile.tabIndex = -1;
       tile.setAttribute("aria-label", `Empty tile ${c + 1}`);
-      tile.addEventListener("click", () => cycleManualMark(r, c));
+      tile.addEventListener("click", () => handleTilePress(r, c));
       tile.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          cycleManualMark(r, c);
+          handleTilePress(r, c);
         }
       });
       rowEl.appendChild(tile);
@@ -416,6 +418,10 @@ function renderTile(row, col, letter, mode) {
   else { tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10"); tile.classList.add("border-slate-700"); }
 }
 function manualMarkKey(row, col) { return `${row}-${col}`; }
+function handleTilePress(row, col) {
+  if (state.submittedRows.has(row)) cycleManualMark(row, col);
+  else if (row === state.row) focusMobileKeyboard();
+}
 function cycleManualMark(row, col) {
   if (easyMode || !state.submittedRows.has(row)) return;
   const key = manualMarkKey(row, col);
@@ -712,7 +718,33 @@ function handleKey(key) {
   if (key === "BACK") return deleteLetter();
   if (/^[A-Z]$/.test(key)) return addLetter(key);
 }
+const mobileGuessInput = document.getElementById("mobile-guess-input");
+const mobileKeyboardQuery = matchMedia("(max-width: 768px) and (pointer: coarse)");
+function usesNativeKeyboard() { return mobileKeyboardQuery.matches; }
+function focusMobileKeyboard() {
+  if (!usesNativeKeyboard() || state.gameOver || !document.getElementById("modal-backdrop").classList.contains("hidden")) return;
+  mobileGuessInput.focus({ preventScroll: true });
+}
+mobileGuessInput.addEventListener("input", () => {
+  const letters = mobileGuessInput.value.toUpperCase().replace(/[^A-Z]/g, "");
+  mobileGuessInput.value = "";
+  for (const letter of letters) addLetter(letter);
+});
+mobileGuessInput.addEventListener("beforeinput", event => {
+  if (event.inputType === "deleteContentBackward") {
+    event.preventDefault();
+    deleteLetter();
+  }
+});
+mobileGuessInput.addEventListener("keydown", event => {
+  event.stopPropagation();
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submitGuess();
+  }
+});
 document.addEventListener("keydown", (e) => {
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
   const k = e.key.toUpperCase();
   if (k === "ENTER") return handleKey("ENTER");
   if (k === "BACKSPACE") return handleKey("BACK");
@@ -735,7 +767,7 @@ document.getElementById("btn-share").addEventListener("click", async () => {
 });
 const modals = { signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
-function openModal(name) { backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
+function openModal(name) { mobileGuessInput.blur(); backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
 function closeModals() { backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
 document.getElementById("btn-signin").addEventListener("click", () => { setSigninMode("signin"); openModal("signin"); });
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
@@ -746,6 +778,7 @@ async function startNewGame() {
   const target = await fetchDailyWord();
   state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
+  if (usesNativeKeyboard()) setTimeout(focusMobileKeyboard, 250);
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
   const existing = await fetchTodaysCompletedGame();
   if (existing) replayCompletedGame(existing);

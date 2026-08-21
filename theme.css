@@ -45,6 +45,8 @@ input {
 }
 #btn-theme { min-width: 38px; font-size: 18px; line-height: 1; }
 #btn-account { border: 1px solid transparent; }
+.mobile-guess-input,
+.mobile-input-help { display: none; }
 
 html[data-theme="light"] .text-slate-50,
 html[data-theme="light"] .text-slate-100,
@@ -128,6 +130,25 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
     overflow-y: auto;
     border-radius: 22px 22px 0 0 !important;
     padding: 1.25rem !important;
+  }
+}
+
+@media (max-width: 768px) and (pointer: coarse) {
+  #keyboard { display: none !important; }
+  .mobile-input-help { display: block; margin-top: -.25rem; }
+  .mobile-guess-input {
+    display: block;
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: .01;
+    font-size: 16px;
+    caret-color: transparent;
+    transform: translateX(-50%);
   }
 }
 

@@ -264,7 +264,7 @@ function updateHintUI() {
   if (!btn || !label) return;
   const remaining = hintsRemaining();
   btn.disabled = state.gameOver || remaining <= 0 || firstOpenCol() >= WORD_LENGTH;
-  label.textContent = remaining > 0 ? `Hint (${remaining} left)` : "No hints left";
+  label.textContent = state.gameOver ? "Hints locked" : (remaining > 0 ? `Hint (${remaining} left)` : "No hints left");
 }
 function applyHintedLettersToRow(row) {
   Object.entries(state.hintedLetters).forEach(([colStr, letter]) => { const col = Number(colStr); state.currentGuess[col] = letter; renderTile(row, col, letter, "hint"); });
@@ -321,7 +321,7 @@ async function submitGuess() {
 }
 function endGame(won) {
   state.gameOver = true; state.won = won;
-  updateHintUI();
+  updateHintUI(); updateGuessCounter();
   sessionStats.played++;
   sessionStats.hintsUsed += state.hintsUsed;
   if (won) { sessionStats.wins++; sessionStats.streak++; sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak); } else { sessionStats.streak = 0; }
@@ -457,7 +457,9 @@ function renderKeyboardStatus() {
   });
 }
 function updateGuessCounter() {
-  document.getElementById("guess-counter").textContent = `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
+  document.getElementById("guess-counter").textContent = state.gameOver
+    ? `Completed in ${state.guesses.length} of ${MAX_GUESSES}`
+    : `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
 }
 function renderStats() {
   const titleEl = document.getElementById("stats-title");
@@ -641,9 +643,10 @@ function hidePostGame() {
   panel.classList.remove("flex");
 }
 function buildShareText() {
-  const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) || "⬜");
+  const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) + "⬛".repeat(WORD_LENGTH - g.exact - g.present));
   const hintNote = state.hintsUsed ? ` (${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""})` : "";
-  return [`Wordstake ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines].join("\n");
+  const gameDay = Math.floor(Date.parse(todayUTCString() + "T00:00:00Z") / 86400000);
+  return [`Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines].join("\n");
 }
 function handleKey(key) {
   if (key === "ENTER") return submitGuess();
@@ -687,6 +690,11 @@ async function startNewGame() {
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
   const existing = await fetchTodaysCompletedGame();
   if (existing) replayCompletedGame(existing);
+  const referral = new URLSearchParams(location.search).get("ref");
+  if (referral && !authUser) {
+    document.getElementById("signin-referral").value = referral.toUpperCase();
+    setSigninMode("signup"); openModal("signin");
+  }
 }
 function replayCompletedGame(gameRow) {
   const guesses = Array.isArray(gameRow.guesses) ? gameRow.guesses : [];
@@ -707,7 +715,7 @@ function replayCompletedGame(gameRow) {
   state.won = gameRow.won;
   state.row = guesses.length;
   state.hintsUsed = gameRow.hints_used || 0;
-  updateHintUI();
+  updateHintUI(); updateGuessCounter();
   showToast(state.hintsUsed ? `You already played today's word (used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}) — come back tomorrow!` : "You already played today's word — come back tomorrow!");
   showPostGame(gameRow.won);
 }

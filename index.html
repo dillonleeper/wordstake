@@ -39,7 +39,14 @@
 <button id="btn-stats" title="Stats" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>
 <button id="btn-leaderboard" title="Leaderboard" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg></button>
 <button id="btn-signin" class="ml-1.5 rounded-full bg-slate-100 px-4 py-2 text-[13px] font-semibold text-slate-950 transition hover:bg-white">Sign In</button>
-<button id="btn-account" hidden class="ml-1.5 flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-1.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span></button>
+<div id="account-menu-wrap" hidden class="relative ml-1.5">
+<button id="btn-account" aria-haspopup="menu" aria-expanded="false" class="flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-2 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span><span class="text-[10px] text-slate-500">▼</span></button>
+<div id="account-dropdown" hidden role="menu" class="absolute right-0 top-[calc(100%+8px)] z-50 w-44 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-glass backdrop-blur-xl">
+<button id="btn-edit-profile" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-slate-200 hover:bg-white/[0.06]">Edit Profile</button>
+<button id="btn-refer-friend" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-slate-200 hover:bg-white/[0.06]">Refer a Friend</button>
+<button id="btn-signout" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-red-400 hover:bg-white/[0.06]">Sign Out</button>
+</div>
+</div>
 </nav>
 </div>
 </header>
@@ -72,7 +79,7 @@
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
 <div class="mt-4 flex w-full gap-2">
 <button id="btn-copy-result" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Copy Result</button>
-<button id="btn-challenge" disabled title="Ships in Phase 3 with account system" class="flex-1 cursor-not-allowed rounded-full bg-white/[0.06] px-4 py-2.5 text-[13px] font-semibold text-slate-500">Challenge a Friend 🔒</button>
+<button id="btn-share" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Share</button>
 </div>
 <p class="mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow for a new word.</p>
 </div>
@@ -94,8 +101,9 @@
 </div>
 <form id="signin-form" class="flex flex-col gap-2.5">
 <input id="signin-username" type="text" placeholder="Username" autocomplete="username" class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
-<input id="signin-email" type="email" placeholder="Email" autocomplete="email" required class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+<input id="signin-email" type="text" placeholder="Username or email" autocomplete="username" required class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <input id="signin-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+<input id="signin-referral" type="text" placeholder="Referral code (optional)" autocomplete="off" class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] uppercase text-slate-100 outline-none transition placeholder:normal-case placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <p id="signin-error" class="hidden text-center text-[12px] leading-relaxed text-red-400"></p>
 <button id="signin-submit" type="submit" class="mt-1 rounded-full bg-brand-500 px-3.5 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Sign In</button>
 <button id="signin-toggle-mode" type="button" class="mt-1 text-center text-[12px] leading-relaxed text-slate-500 transition hover:text-slate-300">New here? Create an account</button>
@@ -103,6 +111,18 @@
 </form>
 </div>
 </div>
+<div id="modal-profile" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-5 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Edit Profile</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<form id="profile-form" class="flex flex-col gap-2.5"><label for="profile-username" class="text-[12px] text-slate-400">Username</label><input id="profile-username" required minlength="3" maxlength="24" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none focus:border-brand-400/60"/><p id="profile-error" class="hidden text-[12px] text-red-400"></p><button class="mt-2 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Save</button></form>
+</div></div>
+<div id="modal-referral" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-4 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Refer a Friend</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<p class="text-[13px] leading-relaxed text-slate-400">When a new player signs up with your link, you both permanently get one extra hint per game.</p>
+<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p class="text-[10px] uppercase tracking-wide text-slate-500">Your referral code</p><p id="referral-code" class="mt-1 font-mono text-lg font-semibold tracking-wider text-brand-400">—</p></div>
+<button id="btn-copy-referral" class="mt-3 w-full rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Copy Invite Link</button>
+</div></div>
 <div id="modal-leaderboard" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-3 flex items-center justify-between">
@@ -169,9 +189,16 @@ async function loadProfileAndStats() {
 }
 sbClient.auth.onAuthStateChange((_event, session) => {
   authUser = session ? session.user : null;
-  loadProfileAndStats().then(renderAuthUI);
+  loadProfileAndStats().then(async () => {
+    const pendingReferral = localStorage.getItem("wordstake_pending_referral");
+    if (authUser && pendingReferral) {
+      try { await redeemReferral(pendingReferral); localStorage.removeItem("wordstake_pending_referral"); await loadProfileAndStats(); }
+      catch (error) { console.warn("[wordstake] referral redemption pending:", error); }
+    }
+    renderAuthUI();
+  });
 });
-const WORD_LENGTH = 5, MAX_GUESSES = 8, MAX_HINTS = 3;
+const WORD_LENGTH = 5, MAX_GUESSES = 8, BASE_MAX_HINTS = 3;
 const DEBUG_REVEAL_ANSWER = false;
 function fallbackWordForDate(dateStr) {
   let hash = 0;
@@ -229,7 +256,8 @@ function deleteLetter() {
   state.currentGuess[c] = "";
   renderTile(state.row, c, "", "empty");
 }
-function hintsRemaining() { return Math.max(0, MAX_HINTS - state.hintsUsed); }
+function maxHints() { return BASE_MAX_HINTS + (authProfile?.bonus_hints || 0); }
+function hintsRemaining() { return Math.max(0, maxHints() - state.hintsUsed); }
 function updateHintUI() {
   const btn = document.getElementById("btn-hint");
   const label = document.getElementById("hint-label");
@@ -445,12 +473,13 @@ function renderStats() {
 }
 function renderAuthUI() {
   const signinBtn = document.getElementById("btn-signin");
-  const accountBtn = document.getElementById("btn-account");
+  const accountWrap = document.getElementById("account-menu-wrap");
   if (authUser) {
-    signinBtn.hidden = true; accountBtn.hidden = false;
+    signinBtn.hidden = true; accountWrap.hidden = false;
     document.getElementById("account-username").textContent = authProfile ? authProfile.username : authUser.email;
     document.getElementById("account-streak").textContent = authStats && authStats.current_streak ? `🔥${authStats.current_streak}` : "";
-  } else { signinBtn.hidden = false; accountBtn.hidden = true; }
+  } else { signinBtn.hidden = false; accountWrap.hidden = true; closeAccountMenu(); }
+  updateHintUI();
 }
 let signinMode = "signin";
 function setSigninMode(mode) {
@@ -459,12 +488,46 @@ function setSigninMode(mode) {
   document.getElementById("signin-submit").textContent = mode === "signup" ? "Create Account" : "Sign In";
   document.getElementById("signin-toggle-mode").textContent = mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account";
   document.getElementById("signin-username").classList.toggle("hidden", mode !== "signup");
+  document.getElementById("signin-referral").classList.toggle("hidden", mode !== "signup");
+  const identifier = document.getElementById("signin-email");
+  identifier.type = mode === "signup" ? "email" : "text";
+  identifier.placeholder = mode === "signup" ? "Email" : "Username or email";
+  identifier.autocomplete = mode === "signup" ? "email" : "username";
   document.getElementById("signin-error").classList.add("hidden");
+}
+async function resolveLoginEmail(identifier) {
+  if (identifier.includes("@")) return identifier;
+  const argNames = ["username_input", "input_username", "p_username", "username"];
+  let lastError;
+  for (const name of argNames) {
+    const { data, error } = await sbClient.rpc("get_email_for_username", { [name]: identifier });
+    if (!error) {
+      const email = typeof data === "string" ? data : data?.email;
+      if (email) return email;
+      throw new Error("No account found for that username");
+    }
+    lastError = error;
+    if (!/parameter|function|argument/i.test(error.message || "")) break;
+  }
+  throw lastError || new Error("No account found for that username");
+}
+async function redeemReferral(code) {
+  if (!code) return;
+  const clean = code.trim().toUpperCase();
+  const argNames = ["referral_code_input", "input_code", "p_referral_code", "code"];
+  let lastError;
+  for (const name of argNames) {
+    const { error } = await sbClient.rpc("redeem_referral", { [name]: clean });
+    if (!error) return;
+    lastError = error;
+    if (!/parameter|function|argument/i.test(error.message || "")) break;
+  }
+  throw lastError;
 }
 document.getElementById("signin-toggle-mode").addEventListener("click", () => { setSigninMode(signinMode === "signup" ? "signin" : "signup"); });
 document.getElementById("signin-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const email = document.getElementById("signin-email").value.trim();
+  const identifier = document.getElementById("signin-email").value.trim();
   const password = document.getElementById("signin-password").value;
   const username = document.getElementById("signin-username").value.trim();
   const errorEl = document.getElementById("signin-error");
@@ -474,10 +537,16 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
   try {
     if (signinMode === "signup") {
       if (!username) throw new Error("Pick a username");
-      const { error } = await sbClient.auth.signUp({ email, password, options: { data: { username } } });
+      const { data, error } = await sbClient.auth.signUp({ email: identifier, password, options: { data: { username } } });
       if (error) throw error;
+      const referral = document.getElementById("signin-referral").value || new URLSearchParams(location.search).get("ref");
+      if (referral) {
+        if (data.session) await redeemReferral(referral);
+        else localStorage.setItem("wordstake_pending_referral", referral.trim().toUpperCase());
+      }
       showToast("Account created! Check your email if confirmation is required.");
     } else {
+      const email = await resolveLoginEmail(identifier);
       const { error } = await sbClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       showToast("Signed in!");
@@ -493,9 +562,46 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
     submitBtn.disabled = false;
   }
 });
-document.getElementById("btn-account").addEventListener("click", async () => {
+function closeAccountMenu() {
+  const menu = document.getElementById("account-dropdown");
+  const button = document.getElementById("btn-account");
+  if (!menu || !button) return;
+  menu.hidden = true; button.setAttribute("aria-expanded", "false");
+}
+document.getElementById("btn-account").addEventListener("click", (event) => {
+  event.stopPropagation();
+  const menu = document.getElementById("account-dropdown");
+  menu.hidden = !menu.hidden;
+  event.currentTarget.setAttribute("aria-expanded", String(!menu.hidden));
+});
+document.addEventListener("click", closeAccountMenu);
+document.getElementById("btn-signout").addEventListener("click", async () => {
   const { error } = await sbClient.auth.signOut();
   if (!error) { authUser = null; authProfile = null; authStats = null; renderAuthUI(); showToast("Signed out"); }
+});
+document.getElementById("btn-edit-profile").addEventListener("click", () => {
+  closeAccountMenu(); document.getElementById("profile-username").value = authProfile?.username || ""; openModal("profile");
+});
+document.getElementById("btn-refer-friend").addEventListener("click", () => {
+  closeAccountMenu(); document.getElementById("referral-code").textContent = authProfile?.referral_code || "Unavailable"; openModal("referral");
+});
+document.getElementById("profile-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const username = document.getElementById("profile-username").value.trim();
+  const errorEl = document.getElementById("profile-error");
+  errorEl.classList.add("hidden");
+  const { data, error } = await sbClient.from("profiles").update({ username }).eq("id", authUser.id).select().single();
+  if (error) { errorEl.textContent = error.message; errorEl.classList.remove("hidden"); return; }
+  authProfile = data; renderAuthUI(); closeModals(); showToast("Profile updated");
+});
+function referralUrl() {
+  const url = new URL(location.origin + location.pathname);
+  url.searchParams.set("ref", authProfile?.referral_code || "");
+  return url.toString();
+}
+document.getElementById("btn-copy-referral").addEventListener("click", async () => {
+  if (!authProfile?.referral_code) return showToast("Referral code unavailable");
+  await navigator.clipboard.writeText(referralUrl()); showToast("Invite link copied!");
 });
 async function renderLeaderboard() {
   const listEl = document.getElementById("leaderboard-list");
@@ -556,7 +662,16 @@ document.getElementById("btn-copy-result").addEventListener("click", async () =>
   try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
   catch { showToast("Copy failed — select manually"); }
 });
-const modals = { signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats") };
+document.getElementById("btn-share").addEventListener("click", async () => {
+  const text = buildShareText();
+  if (navigator.share) {
+    try { await navigator.share({ title: "Wordstake", text, url: location.origin }); return; }
+    catch (error) { if (error.name === "AbortError") return; }
+  }
+  try { await navigator.clipboard.writeText(`${text}\n${location.origin}`); showToast("Result copied!"); }
+  catch { showToast("Sharing isn't available here"); }
+});
+const modals = { signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
 function openModal(name) { backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
 function closeModals() { backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
@@ -600,3 +715,4 @@ checkSession().then(startNewGame);
 </script>
 </body>
 </html>
+

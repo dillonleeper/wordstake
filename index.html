@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wordstake — Never Lose Your Streak</title>
+
+<!-- ============================================================ -->
+<!-- SEO / SOCIAL METADATA                                         -->
+<!-- Replace REPLACE_WITH_DOMAIN below once you have a real domain -->
+<!-- (needed for og:url and og:image to resolve correctly). Add a  -->
+<!-- real 1200x630 og-image.png at that path before launch — social -->
+<!-- platforms will otherwise fall back to a blank/no preview card. -->
+<!-- ============================================================ -->
+<meta name="description" content="Wordstake is a free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again. 5 letters, 8 guesses, a twist: you only see how many letters you got right, never which ones." />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://REPLACE_WITH_DOMAIN/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Wordstake" />
+<meta property="og:title" content="Wordstake — Never Lose Your Streak" />
+<meta property="og:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
+<meta property="og:url" content="https://REPLACE_WITH_DOMAIN/" />
+<meta property="og:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Wordstake — Never Lose Your Streak" />
+<meta name="twitter:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
+<meta name="twitter:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
+
+<meta name="theme-color" content="#0a0a0b" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2322b352'/%3E%3Ctext x='16' y='23' font-size='18' font-weight='700' font-family='Arial,sans-serif' fill='%230a0a0b' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
+
+<!-- Structured data: helps Google understand this is a free web game,
+     eligible for game-related rich results. Update once real user/rating
+     data exists — don't leave aggregateRating fields fabricated. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Wordstake",
+  "description": "A free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<!-- Inter is the primary typeface; -apple-system in the fallback stack means
+     Mac/iOS users see native SF Pro even before/if this font finishes loading. -->
+
+<!-- Supabase JS client (Phase 0/3): auth + daily_words + game_history/user_stats. -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- Tailwind, compiled ahead of time with the Tailwind CLI (tailwind.config.js + input.css in the project folder) -->
+<!-- so this file has zero external dependencies and no "cdn.tailwindcss.com should not be used in production" console warning. -->
+<link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-brand-500/30 bg-[radial-gradient(ellipse_70%_45%_at_50%_-8%,rgba(48,209,88,0.10),transparent),radial-gradient(ellipse_50%_35%_at_85%_105%,rgba(255,255,255,0.035),transparent)] bg-fixed">
+
+<!-- ============================================================ -->
+<!-- PHASE 1: TOP NAVIGATION                                       -->
+<!-- ============================================================ -->
+<header class="sticky top-0 z-30 border-b border-white/[0.06] bg-slate-950/50 backdrop-blur-2xl">
+  <div class="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
+    <div class="flex items-center gap-2.5">
+      <div class="grid h-7 w-7 place-items-center rounded-[9px] bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_4px_12px_-4px_rgba(48,209,88,0.55)]">W</div>
+      <span class="text-[15px] font-semibold tracking-tight text-slate-100">Word<span class="font-medium text-slate-400">stake</span></span>
+    </div>
+
+    <nav class="flex items-center gap-1">
+      <button id="btn-stats" title="Stats"
+        class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100">
+        <!-- bar-chart icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
+      <button id="btn-leaderboard" title="Leaderboard"
+        class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100">
+        <!-- trophy icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg>
+      </button>
+      <button id="btn-signin"
+        class="ml-1.5 rounded-full bg-slate-100 px-4 py-2 text-[13px] font-semibold text-slate-950 transition hover:bg-white">
+        Sign In
+      </button>
+      <button id="btn-account" hidden
+        class="ml-1.5 flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-1.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]">
+        <span id="account-streak" class="text-brand-400"></span>
+        <span id="account-username" class="max-w-[100px] truncate"></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Toast -->
+<div id="toast"
+  class="pointer-events-none fixed left-1/2 top-20 z-40 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200">
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 1: MAIN GAME LAYOUT                                     -->
+<!-- ============================================================ -->
+<main class="mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
+
+  <!-- Guess counter / hint / legend strip -->
+  <div class="flex w-full items-center justify-between">
+    <span class="flex items-center gap-2.5">
+      <span id="guess-counter" class="text-[13px] font-medium text-slate-400">Guess 1 of 8</span>
+      <!-- Hint: reveals one correct letter+position, deducted from the
+           daily word's own "never reveal position" rule on purpose — this
+           is the cost the player accepts. Counted and persisted (see
+           useHint()/submitGameResult()) so it shows up on their score,
+           not a silent freebie. -->
+      <button id="btn-hint" type="button" title="Reveal a letter — counts against your score"
+        class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">
+        💡 <span id="hint-label">Hint (3 left)</span>
+      </button>
+    </span>
+    <span class="flex items-center gap-3 text-[12px] text-slate-500">
+      <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-brand-400"></span>Exact</span>
+      <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-yellow-400"></span>Present</span>
+    </span>
+  </div>
+
+  <!-- Easy Mode: lets players leave their own notes on submitted letters,
+       since the game deliberately never reveals per-letter position. -->
+  <div class="flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
+    <label class="flex cursor-pointer items-center gap-2.5">
+      <button id="easy-mode-toggle" type="button" role="switch" aria-checked="false"
+        class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200">
+        <span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span>
+      </button>
+      <span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
+    </label>
+    <span class="hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">
+      Tap a submitted tile, or right-click / long-press a key, to leave your own mark
+    </span>
+  </div>
+
+  <!-- Grid + non-positional result sidebar -->
+  <div class="flex w-full items-start justify-center gap-3 sm:gap-4">
+
+    <!-- 5x8 letter grid (5 cols, 8 guess-rows). Tiles stay neutral —
+         this game never colors individual letters, only aggregate
+         counts are revealed (see sidebar), which is Wordstake's twist
+         on the classic word-guessing formula. -->
+    <div id="grid" class="grid grid-rows-8 gap-2"></div>
+
+    <!-- Non-positional result sidebar: one row per guess, showing only
+         the TOTAL green/yellow count — never which letters matched. -->
+    <div id="sidebar" class="flex flex-col gap-2"></div>
+  </div>
+
+  <!-- On-screen keyboard -->
+  <div id="keyboard" class="mt-1 flex w-full max-w-lg flex-col items-center gap-2"></div>
+
+  <!-- Post-game actions -->
+  <div id="post-game" class="hidden w-full max-w-lg flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-glass backdrop-blur-xl animate-rise">
+    <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
+    <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
+    <div class="mt-4 flex w-full gap-2">
+      <button id="btn-copy-result"
+        class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">
+        Copy Result
+      </button>
+      <button id="btn-challenge" disabled title="Ships in Phase 3 with account system"
+        class="flex-1 cursor-not-allowed rounded-full bg-white/[0.06] px-4 py-2.5 text-[13px] font-semibold text-slate-500">
+        Challenge a Friend 🔒
+      </button>
+    </div>
+    <p class="mt-3 text-center text-[12px] font-medium text-slate-500">
+      Come back tomorrow for a new word.
+    </p>
+  </div>
+</main>
+
+<footer class="mx-auto mt-2 flex max-w-2xl flex-col items-center gap-1 px-5 py-8 text-center text-[12px] text-slate-600">
+  <p>&copy; 2026 Wordstake. Not affiliated with any other word game.</p>
+  <p>
+    <a href="/terms.html" class="text-slate-500 underline decoration-dotted hover:text-slate-300">Terms of Service</a>
+    <span class="mx-1.5">·</span>
+    <a href="/privacy.html" class="text-slate-500 underline decoration-dotted hover:text-slate-300">Privacy Policy</a>
+  </p>
+</footer>
+
+<!-- ============================================================ -->
+<!-- PHASE 1: MODAL SHELLS (Sign In / Leaderboard / Stats)         -->
+<!-- Wired up for real in Phase 3 — currently static placeholders. -->
+<!-- ============================================================ -->
+<div id="modal-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-md"></div>
+
+<div id="modal-signin" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+    <div class="mb-5 flex items-center justify-between">
+      <h2 id="signin-title" class="text-[17px] font-semibold tracking-tight text-slate-50">Sign In</h2>
+      <button data-close-modal class="rounded-full p-1 text-slate-500 transition hover:bg-white/5 hover:text-slate-200">✕</button>
+    </div>
+    <form id="signin-form" class="flex flex-col gap-2.5">
+      <input id="signin-username" type="text" placeholder="Username" autocomplete="username"
+        class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+      <input id="signin-email" type="email" placeholder="Email" autocomplete="email" required
+        class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+      <input id="signin-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6"
+        class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+      <p id="signin-error" class="hidden text-center text-[12px] leading-relaxed text-red-400"></p>
+      <button id="signin-submit" type="submit" class="mt-1 rounded-full bg-brand-500 px-3.5 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">
+        Sign In
+      </button>
+      <button id="signin-toggle-mode" type="button" class="mt-1 text-center text-[12px] leading-relaxed text-slate-500 transition hover:text-slate-300">
+        New here? Create an account
+      </button>
+      <p class="mt-1 text-center text-[11px] leading-relaxed text-slate-600">
+        By continuing, you agree to our <a href="/terms.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Terms</a>
+        and <a href="/privacy.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Privacy Policy</a>.
+      </p>
+    </form>
+  </div>
+</div>
+
+<div id="modal-leaderboard" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+    <div class="mb-3 flex items-center justify-between">
+      <h2 class="text-[17px] font-semibold tracking-tight text-slate-50">Top Streaks</h2>
+      <button data-close-modal class="rounded-full p-1 text-slate-500 transition hover:bg-white/5 hover:text-slate-200">✕</button>
+    </div>
+    <div id="leaderboard-list" class="flex flex-col gap-1.5">
+      <p class="text-[13px] leading-relaxed text-slate-400">Loading…</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-stats" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+    <div class="mb-5 flex items-center justify-between">
+      <h2 id="stats-title" class="text-[17px] font-semibold tracking-tight text-slate-50">Your Stats (this session)</h2>
+      <button data-close-modal class="rounded-full p-1 text-slate-500 transition hover:bg-white/5 hover:text-slate-200">✕</button>
+    </div>
+    <div class="grid grid-cols-5 gap-2 text-center">
+      <div><p id="stat-played" class="text-[22px] font-semibold tracking-tight text-slate-50">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Played</p></div>
+      <div><p id="stat-winpct" class="text-[22px] font-semibold tracking-tight text-slate-50">0%</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Win %</p></div>
+      <div><p id="stat-streak" class="text-[22px] font-semibold tracking-tight text-slate-50">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Streak</p></div>
+      <div><p id="stat-maxstreak" class="text-[22px] font-semibold tracking-tight text-slate-50">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Max Streak</p></div>
+      <div><p id="stat-hints" class="text-[22px] font-semibold tracking-tight text-yellow-400">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Hints</p></div>
+    </div>
+    <p id="stats-footnote" class="mt-5 text-center text-[12px] leading-relaxed text-slate-500">Session-only — sign in to save your stats across devices.</p>
+  </div>
+</div>
+
+<script src="/words.js"></script>
+<script>
+/* ================================================================
+ * PHASE 0/3: SUPABASE BACKEND (daily word, auth, cross-device stats)
+ * ================================================================ */
+
+// Publishable/anon key — safe to ship client-side, RLS policies on the
+// project do the actual access control (see the migration in the repo).
+const SUPABASE_URL = "https://dgghxstckwcbxwiliabj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnZ2h4c3Rja3djYnh3aWxpYWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNjk3MDUsImV4cCI6MjEwMjc0NTcwNX0.oB8sSRD3oY1gUQUwxIya5JEqKEmQU0PVcdvS9evqt-s";
+const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Current signed-in user/profile/stats (null when signed out). Populated by
+// checkSession() on load and kept in sync via onAuthStateChange below.
+let authUser = null;
+let authProfile = null;
+let authStats = null;
+
+function todayUTCString() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD in UTC
+}
+
+// Fetch the server-authoritative word for today. RLS on daily_words only
+// allows reading game_date <= today, so this can never leak a future
+// answer no matter how it's called — the old version kept every answer in
+// a client-visible JS array, same exposure class as the earlier console-leak
+// bug. Falls back to a local deterministic pick if the network/DB is down,
+// so the game still works offline (see fallbackWordForDate near ANSWER_WORDS).
+async function fetchDailyWord() {
+  const today = todayUTCString();
+  try {
+    const { data, error } = await sbClient
+      .from("daily_words")
+      .select("word")
+      .eq("game_date", today)
+      .single();
+    if (error || !data) throw error || new Error("no row for today");
+    return data.word;
+  } catch (e) {
+    console.warn("[wordstake] falling back to offline word for today:", e);
+    return fallbackWordForDate(today);
+  }
+}
+
+// If this user already has a completed game_history row for today (e.g.
+// they played on another device already), fetch it so we can show the
+// "already played today" state instead of letting them replay.
+async function fetchTodaysCompletedGame() {
+  if (!authUser) return null;
+  const { data } = await sbClient
+    .from("game_history")
+    .select("*")
+    .eq("user_id", authUser.id)
+    .eq("game_date", todayUTCString())
+    .maybeSingle();
+  return data || null;
+}
+
+async function checkSession() {
+  const { data: { session } } = await sbClient.auth.getSession();
+  authUser = session ? session.user : null;
+  if (authUser) await loadProfileAndStats();
+  renderAuthUI();
+}
+
+async function loadProfileAndStats() {
+  if (!authUser) { authProfile = null; authStats = null; return; }
+  const [{ data: profile }, { data: stats }] = await Promise.all([
+    sbClient.from("profiles").select("*").eq("id", authUser.id).maybeSingle(),
+    sbClient.from("user_stats").select("*").eq("user_id", authUser.id).maybeSingle(),
+  ]);
+  authProfile = profile;
+  authStats = stats;
+}
+
+sbClient.auth.onAuthStateChange((_event, session) => {
+  authUser = session ? session.user : null;
+  loadProfileAndStats().then(renderAuthUI);
+});
+
+/* ================================================================
+ * PHASE 2: CORE GAME LOGIC
+ * ================================================================ */
+
+const WORD_LENGTH = 5;
+const MAX_GUESSES  = 8;
+const MAX_HINTS    = 3; // capped well below WORD_LENGTH so hints can't solve the word outright
+
+// Set to true only while you're personally debugging — anyone with devtools
+// open can read the target word from the console if this is on. It was
+// left on by default in v1, which quietly defeated the whole guessing game.
+const DEBUG_REVEAL_ANSWER = false;
+
+// Curated list of common words used as SECRET answers (kept small &
+// friendly on purpose — these are the words the game will pick for you
+// to guess). Swap for a curated Supabase-hosted list in Phase 3.
+// ANSWER_WORDS now loaded from /words.js (see <script src="/words.js"> above)
+// Local fallback ONLY (offline / Supabase unreachable): deterministic-by-date
+// pick so an offline player still gets a consistent word for today, though it
+// will not match other players if the network pick differs. Not used when the
+// daily_words table is reachable — see fetchDailyWord().
+function fallbackWordForDate(dateStr) {
+  let hash = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
+  }
+  return ANSWER_WORDS[hash % ANSWER_WORDS.length];
+}
+
+// Guess validation is server-side (Supabase RPC is_valid_guess), backed by
+// the full ~13k-word valid_guesses table. This keeps the word list off the
+// client entirely -- the old v1 bug had guesses checked against the tiny
+// 50-word target list itself, and even a bigger client-side array is still
+// fully readable via view-source, which defeats the point for the daily
+// answer. See isValidGuessWord() below.
+
+// ---- Mutable game state ---------------------------------------------------
+let state = {
+  target: "",
+  targetLetters: [],
+  row: 0,
+  col: 0,
+  currentGuess: Array(WORD_LENGTH).fill(""),
+  guesses: [],        // [{ word, exact, present }]
+  gameOver: false,
+  won: false,
+  keyStatus: {},       // letter -> 'correct' | 'present' | 'absent' (system-computed, from real guesses)
+  submittedRows: new Set(),  // which row indexes have a locked-in guess
+  manualTileMarks: {}, // "row-col" -> 'gray' | 'yellow' | 'green' (Easy Mode: player's own notes)
+  manualKeyMarks: {},  // letter -> 'gray' | 'yellow' | 'green' (Easy Mode: player's own notes)
+  hintsUsed: 0,         // count toward MAX_HINTS, persisted to game_history/user_stats
+  hintedLetters: {}     // col -> revealed letter, carried forward into every future row
+};
+
+// Session-only stats, used for the anonymous (signed-out) player. Signed-in
+// players' real stats live in Supabase `user_stats` (see authStats) and are
+// what actually gets shown/persisted cross-device.
+let sessionStats = { played: 0, wins: 0, streak: 0, maxStreak: 0, hintsUsed: 0 };
+
+// Core scoring algorithm: duplicate-letter-aware, two-pass.
+// Returns aggregate counts only — callers decide what (if anything)
+// to reveal about *which* letters matched.
+function scoreGuess(guessArr, targetArr) {
+  const target = targetArr.slice();
+  const guess  = guessArr.slice();
+  const letterResult = Array(WORD_LENGTH).fill("absent"); // per-letter, used only for keyboard hints
+  let exact = 0;
+
+  // Pass 1: exact position matches
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    if (guess[i] === target[i]) {
+      exact++;
+      letterResult[i] = "correct";
+      target[i] = null;
+      guess[i] = null;
+    }
+  }
+
+  // Pass 2: right letter, wrong position (accounts for duplicates correctly)
+  let present = 0;
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    if (guess[i] === null) continue;
+    const idx = target.indexOf(guess[i]);
+    if (idx !== -1) {
+      present++;
+      letterResult[i] = "present";
+      target[idx] = null;
+    }
+  }
+
+  return { exact, present, letterResult };
+}
+
+function updateKeyStatus(guessArr, letterResult) {
+  const rank = { absent: 0, present: 1, correct: 2 };
+  guessArr.forEach((letter, i) => {
+    const newStatus = letterResult[i];
+    const current = state.keyStatus[letter];
+    if (!current || rank[newStatus] > rank[current]) {
+      state.keyStatus[letter] = newStatus;
+    }
+  });
+}
+
+// ---- Easy Mode: player-made notes (not system feedback) -------------------
+// The game deliberately never reveals *which* letters matched (see the
+// aggregate-only sidebar above). Easy Mode gives players a scratchpad to
+// track their own theories: click through gray -> yellow -> green -> none
+// on a submitted tile, or right-click / long-press a keyboard letter.
+// These marks never affect scoring — they're just sticky notes.
+
+let easyMode = false;
+const MARK_CYCLE = ["none", "gray", "yellow", "green"];
+const MARK_RING_CLASSES = ["ring-2", "ring-offset-2", "ring-offset-slate-950", "ring-slate-500", "ring-yellow-400", "ring-brand-400"];
+const MARK_RING_MAP = {
+  gray:   ["ring-2", "ring-offset-2", "ring-offset-slate-950", "ring-slate-500"],
+  yellow: ["ring-2", "ring-offset-2", "ring-offset-slate-950", "ring-yellow-400"],
+  green:  ["ring-2", "ring-offset-2", "ring-offset-slate-950", "ring-brand-400"]
+};
+
+function nextMark(current) {
+  const idx = MARK_CYCLE.indexOf(current || "none");
+  return MARK_CYCLE[(idx + 1) % MARK_CYCLE.length];
+}
+
+function applyTileMarkStyle(row, col) {
+  const tile = document.getElementById(`tile-${row}-${col}`);
+  if (!tile) return;
+  tile.classList.remove(...MARK_RING_CLASSES);
+  const mark = state.manualTileMarks[`${row}-${col}`];
+  if (mark && mark !== "none") {
+    tile.classList.add(...MARK_RING_MAP[mark]);
+  }
+}
+
+function refreshEasyModeAffordances() {
+  document.querySelectorAll("#grid > div").forEach((rowEl, r) => {
+    const clickable = easyMode && state.submittedRows.has(r);
+    Array.from(rowEl.children).forEach(tile => {
+      tile.classList.toggle("cursor-pointer", clickable);
+      tile.title = clickable ? "Click to mark this letter (your notes only)" : "";
+    });
+  });
+  document.querySelectorAll("#keyboard button[data-key]").forEach(btn => {
+    if (/^[A-Z]$/.test(btn.dataset.key)) {
+      btn.title = easyMode ? "Right-click or long-press to mark this letter (your notes only)" : "";
+    }
+  });
+}
+
+const easyModeToggle = document.getElementById("easy-mode-toggle");
+const easyModeKnob = document.getElementById("easy-mode-knob");
+
+function setEasyMode(on) {
+  easyMode = on;
+  easyModeToggle.setAttribute("aria-checked", String(on));
+  easyModeToggle.classList.toggle("bg-brand-500", on);
+  easyModeToggle.classList.toggle("bg-slate-700", !on);
+  easyModeKnob.classList.toggle("translate-x-4", on);
+  easyModeKnob.classList.toggle("translate-x-0.5", !on);
+  refreshEasyModeAffordances();
+}
+
+easyModeToggle.addEventListener("click", () => setEasyMode(!easyMode));
+document.getElementById("btn-hint").addEventListener("click", useHint);
+
+// ---- Input handling ---------------------------------------------------
+
+// Hinted columns are pre-filled and not typeable — these two helpers keep
+// the input cursor stepping around them in both directions.
+function firstOpenCol() {
+  let c = 0;
+  while (c < WORD_LENGTH && state.hintedLetters[c] !== undefined) c++;
+  return c;
+}
+
+function addLetter(letter) {
+  if (state.gameOver) return;
+  while (state.col < WORD_LENGTH && state.hintedLetters[state.col] !== undefined) state.col++;
+  if (state.col >= WORD_LENGTH) return;
+  state.currentGuess[state.col] = letter;
+  renderTile(state.row, state.col, letter, "filled");
+  state.col++;
+}
+
+function deleteLetter() {
+  if (state.gameOver) return;
+  let c = state.col - 1;
+  while (c >= 0 && state.hintedLetters[c] !== undefined) c--;
+  if (c < 0) return;
+  state.col = c;
+  state.currentGuess[c] = "";
+  renderTile(state.row, c, "", "empty");
+}
+
+// ---- Hints -----------------------------------------------------------
+// A hint reveals one letter AND its position — the one piece of info this
+// game otherwise never shows (see the non-positional sidebar design). That
+// makes it a real trade-off, not a freebie, so every hint is counted in
+// state.hintsUsed and persisted to game_history/user_stats (see
+// submitGameResult) and surfaced in the post-game message and share text.
+function hintsRemaining() {
+  return Math.max(0, MAX_HINTS - state.hintsUsed);
+}
+
+function updateHintUI() {
+  const btn = document.getElementById("btn-hint");
+  const label = document.getElementById("hint-label");
+  if (!btn || !label) return;
+  const remaining = hintsRemaining();
+  btn.disabled = state.gameOver || remaining <= 0 || firstOpenCol() >= WORD_LENGTH;
+  label.textContent = remaining > 0 ? `Hint (${remaining} left)` : "No hints left";
+}
+
+// Re-stamps every already-revealed hint letter into a freshly-cleared row
+// (called whenever play advances to a new guess row) so hints stay visible
+// and typed-around for the rest of the game, not just the row they were
+// used on.
+function applyHintedLettersToRow(row) {
+  Object.entries(state.hintedLetters).forEach(([colStr, letter]) => {
+    const col = Number(colStr);
+    state.currentGuess[col] = letter;
+    renderTile(row, col, letter, "hint");
+  });
+}
+
+function useHint() {
+  if (state.gameOver || hintsRemaining() <= 0) return;
+  const col = firstOpenCol();
+  if (col >= WORD_LENGTH) { showToast("All letters already revealed"); return; }
+  const letter = state.targetLetters[col];
+  state.hintedLetters[col] = letter;
+  state.hintsUsed++;
+  state.currentGuess[col] = letter;
+  renderTile(state.row, col, letter, "hint");
+  showToast(`Hint: letter ${col + 1} is ${letter}`);
+  updateHintUI();
+}
+
+const validGuessCache = new Map();
+
+async function isValidGuessWord(word) {
+  if (ANSWER_WORDS.includes(word)) return true;
+  if (validGuessCache.has(word)) return validGuessCache.get(word);
+  try {
+    const { data, error } = await sbClient.rpc("is_valid_guess", { guess_word: word });
+    const ok = !error && data === true;
+    validGuessCache.set(word, ok);
+    return ok;
+  } catch (e) {
+    console.error("Guess validation failed:", e);
+    // Fail open on a network hiccup so a real internet blip doesn't
+    // block a legitimate guess -- the daily word itself is still
+    // server-authoritative regardless of this check.
+    return true;
+  }
+}
+
+async function submitGuess() {
+  if (state.gameOver) return;
+
+  // Array-fullness rather than the col cursor, so hinted (pre-filled)
+  // columns always count regardless of typing order around them.
+  if (state.currentGuess.some(letter => letter === "")) {
+    showToast("Not enough letters");
+    shakeRow(state.row);
+    return;
+  }
+
+  const word = state.currentGuess.join("");
+  if (state.submitLock) return;
+  state.submitLock = true;
+  const valid = await isValidGuessWord(word);
+  state.submitLock = false;
+  if (state.gameOver) return; // guard: game could have ended while awaiting
+  if (!valid) {
+    showToast("Not in word list");
+    shakeRow(state.row);
+    return;
+  }
+
+  const { exact, present, letterResult } = scoreGuess(state.currentGuess, state.targetLetters);
+  state.guesses.push({ word, exact, present });
+  state.submittedRows.add(state.row);
+  updateKeyStatus(state.currentGuess, letterResult);
+  renderKeyboardStatus();
+  renderSidebarRow(state.row, exact, present);
+  markRowFilled(state.row);
+  refreshEasyModeAffordances();
+
+  if (exact === WORD_LENGTH) {
+    endGame(true);
+    return;
+  }
+
+  state.row++;
+  state.col = 0;
+  state.currentGuess = Array(WORD_LENGTH).fill("");
+
+  if (state.row >= MAX_GUESSES) {
+    endGame(false);
+    return;
+  }
+
+  applyHintedLettersToRow(state.row);
+  state.col = firstOpenCol();
+  updateGuessCounter();
+}
+
+function endGame(won) {
+  state.gameOver = true;
+  state.won = won;
+  updateHintUI();
+
+  sessionStats.played++;
+  sessionStats.hintsUsed += state.hintsUsed;
+  if (won) {
+    sessionStats.wins++;
+    sessionStats.streak++;
+    sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak);
+  } else {
+    sessionStats.streak = 0;
+  }
+  renderStats();
+
+  // Fire-and-forget: the post-game panel shows immediately, stats sync in
+  // the background and re-render once the write completes.
+  submitGameResult({
+    word: state.target,
+    solved: won,
+    guessesTaken: state.guesses.length,
+    hintsUsed: state.hintsUsed,
+  });
+
+  showPostGame(won);
+}
+
+async function submitGameResult(result) {
+  if (!authUser) {
+    // Signed-out players keep session-only stats; nudge them toward an
+    // account so the streak actually survives a refresh/device switch.
+    showToast(result.solved ? "Nice! Sign in to save your streak." : "Sign in to save your streak.");
+    return;
+  }
+
+  const today = todayUTCString();
+
+  const { error: historyError } = await sbClient.from("game_history").insert({
+    user_id: authUser.id,
+    game_date: today,
+    target_word: result.word,
+    guesses: state.guesses,
+    num_guesses: result.guessesTaken,
+    won: result.solved,
+    hints_used: result.hintsUsed || 0,
+  });
+  // A unique-violation here just means this device raced another device's
+  // submission for the same day — not an error worth surfacing.
+  if (historyError && historyError.code !== "23505") {
+    console.error("[wordstake] failed to save game_history:", historyError);
+  }
+
+  // Recompute stats from the authoritative source (game_history) rather than
+  // trusting a client-side running tally, so a stats row can never drift
+  // from what actually happened — and self-heals if this device missed a
+  // previous write.
+  const { data: history } = await sbClient
+    .from("game_history")
+    .select("game_date, won, num_guesses, hints_used")
+    .eq("user_id", authUser.id)
+    .order("game_date", { ascending: true });
+
+  if (history && history.length) {
+    const gamesPlayed = history.length;
+    const gamesWon = history.filter(h => h.won).length;
+    const totalHintsUsed = history.reduce((sum, h) => sum + (h.hints_used || 0), 0);
+    const distribution = { "1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0 };
+    history.forEach(h => { if (h.won && distribution[h.num_guesses] !== undefined) distribution[h.num_guesses]++; });
+
+    let streak = 0, maxStreak = 0, prevDate = null;
+    history.forEach(h => {
+      if (!h.won) { streak = 0; prevDate = null; return; }
+      if (prevDate) {
+        const dayGap = (new Date(h.game_date) - new Date(prevDate)) / 86400000;
+        streak = dayGap === 1 ? streak + 1 : 1;
+      } else {
+        streak = 1;
+      }
+      maxStreak = Math.max(maxStreak, streak);
+      prevDate = h.game_date;
+    });
+    // Streak only counts as "current" if the most recent win chain reaches today/yesterday.
+    const lastEntry = history[history.length - 1];
+    const lastGap = (new Date(today) - new Date(lastEntry.game_date)) / 86400000;
+    const currentStreak = (lastEntry.won && lastGap <= 1) ? streak : 0;
+
+    const { data: updatedStats, error: statsError } = await sbClient
+      .from("user_stats")
+      .update({
+        games_played: gamesPlayed,
+        games_won: gamesWon,
+        current_streak: currentStreak,
+        max_streak: Math.max(maxStreak, currentStreak),
+        last_played_date: today,
+        guess_distribution: distribution,
+        total_hints_used: totalHintsUsed,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", authUser.id)
+      .select()
+      .maybeSingle();
+
+    if (statsError) {
+      console.error("[wordstake] failed to update user_stats:", statsError);
+    } else if (updatedStats) {
+      authStats = updatedStats;
+      renderStats();
+      renderAuthUI();
+    }
+  }
+}
+
+// ---- Rendering ---------------------------------------------------------
+
+function buildGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  for (let r = 0; r < MAX_GUESSES; r++) {
+    const rowEl = document.createElement("div");
+    rowEl.className = "flex gap-2";
+    rowEl.id = `row-${r}`;
+    for (let c = 0; c < WORD_LENGTH; c++) {
+      const tile = document.createElement("div");
+      tile.id = `tile-${r}-${c}`;
+      tile.className = "grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl border-2 border-slate-700 text-[22px] font-semibold uppercase tracking-tight text-slate-50 transition-colors duration-150";
+      tile.addEventListener("click", () => {
+        if (!easyMode || !state.submittedRows.has(r)) return;
+        const key = `${r}-${c}`;
+        state.manualTileMarks[key] = nextMark(state.manualTileMarks[key]);
+        applyTileMarkStyle(r, c);
+      });
+      rowEl.appendChild(tile);
+    }
+    grid.appendChild(rowEl);
+  }
+}
+
+function buildSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.innerHTML = "";
+  for (let r = 0; r < MAX_GUESSES; r++) {
+    const cell = document.createElement("div");
+    cell.id = `sidebar-${r}`;
+    cell.className = "flex h-11 sm:h-12 min-w-[62px] items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-2 text-[13px] font-semibold tabular-nums text-slate-500";
+    cell.textContent = "–";
+    sidebar.appendChild(cell);
+  }
+}
+
+function renderTile(row, col, letter, mode) {
+  const tile = document.getElementById(`tile-${row}-${col}`);
+  tile.textContent = letter;
+  if (mode === "filled") {
+    tile.classList.add("border-slate-400", "bg-slate-800", "animate-pop");
+    tile.classList.remove("border-slate-700", "border-yellow-400", "bg-yellow-400/10");
+  } else if (mode === "hint") {
+    // Distinct from a normal typed letter — this tile was revealed, not guessed.
+    tile.classList.add("border-yellow-400", "bg-yellow-400/10", "animate-pop");
+    tile.classList.remove("border-slate-700", "border-slate-400", "bg-slate-800");
+  } else {
+    tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10");
+    tile.classList.add("border-slate-700");
+  }
+}
+
+function markRowFilled(row) {
+  // Tiles stay neutral by design (non-positional feedback lives in the
+  // sidebar) — we just lock in a "settled" surface to show it's submitted.
+  // Explicitly strips the hint styling too (not just the typed-letter one)
+  // so a hinted tile doesn't end up with two competing border-color
+  // utilities fighting over cascade order — same bug class as the keyboard
+  // color bug documented above.
+  for (let c = 0; c < WORD_LENGTH; c++) {
+    const tile = document.getElementById(`tile-${row}-${c}`);
+    tile.classList.remove("border-slate-400", "border-yellow-400", "bg-yellow-400/10");
+    tile.classList.add("bg-slate-800", "shadow-key", "border-slate-600");
+  }
+}
+
+function renderSidebarRow(row, exact, present) {
+  const cell = document.getElementById(`sidebar-${row}`);
+  cell.classList.remove("text-slate-600");
+  cell.innerHTML = `
+    <span class="flex items-center gap-1 text-brand-400"><span class="h-[6px] w-[6px] rounded-full bg-brand-400"></span>${exact}</span>
+    <span class="flex items-center gap-1 text-yellow-400"><span class="h-[6px] w-[6px] rounded-full bg-yellow-400"></span>${present}</span>
+  `;
+}
+
+function shakeRow(row) {
+  const rowEl = document.getElementById(`row-${row}`);
+  rowEl.classList.add("animate-shake");
+  setTimeout(() => rowEl.classList.remove("animate-shake"), 400);
+}
+
+const KEY_ROWS = [
+  ["Q","W","E","R","T","Y","U","I","O","P"],
+  ["A","S","D","F","G","H","J","K","L"],
+  ["ENTER","Z","X","C","V","B","N","M","BACK"]
+];
+
+// Base (non-color) classes for a key — pulled out so renderKeyboardStatus
+// can fully rebuild className from scratch every time instead of patching
+// an already-mutated string. (v1 only stripped the two *default* classes
+// before appending a new status color, so a letter that got upgraded from
+// present->correct across guesses ended up with BOTH yellow and green
+// background classes on it, and whichever the browser resolved first won —
+// visible in testing as a key staying yellow after it should've gone
+// green. Rebuilding from a fixed base avoids that entirely.)
+function keyBaseClass(key) {
+  const isWide = key === "ENTER" || key === "BACK";
+  return [
+    "select-none rounded-xl font-medium text-slate-100 transition-all duration-150 ease-out active:scale-[0.94]",
+    isWide ? "px-3.5 text-[11px] sm:text-[13px] h-11 sm:h-12" : "h-11 w-8 sm:h-12 sm:w-10 text-[14px] sm:text-[15px]"
+  ].join(" ");
+}
+
+function buildKeyboard() {
+  const kb = document.getElementById("keyboard");
+  kb.innerHTML = "";
+  KEY_ROWS.forEach(row => {
+    const rowEl = document.createElement("div");
+    rowEl.className = "flex w-full justify-center gap-1.5";
+    row.forEach(key => {
+      const btn = document.createElement("button");
+      btn.dataset.key = key;
+      btn.textContent = key === "BACK" ? "⌫" : (key === "ENTER" ? "Enter" : key);
+      btn.className = keyBaseClass(key) + " bg-slate-800 shadow-key hover:bg-slate-700";
+      btn.addEventListener("click", () => handleKey(key));
+
+      // Easy Mode note-taking on letter keys only (Enter/Backspace stay plain).
+      if (/^[A-Z]$/.test(key)) {
+        btn.addEventListener("contextmenu", (e) => {
+          if (!easyMode) return;
+          e.preventDefault();
+          state.manualKeyMarks[key] = nextMark(state.manualKeyMarks[key]);
+          renderKeyboardStatus();
+        });
+        let pressTimer = null;
+        btn.addEventListener("touchstart", () => {
+          if (!easyMode) return;
+          pressTimer = setTimeout(() => {
+            state.manualKeyMarks[key] = nextMark(state.manualKeyMarks[key]);
+            renderKeyboardStatus();
+          }, 500);
+        }, { passive: true });
+        ["touchend", "touchmove", "touchcancel"].forEach(evt =>
+          btn.addEventListener(evt, () => clearTimeout(pressTimer))
+        );
+      }
+
+      rowEl.appendChild(btn);
+    });
+    kb.appendChild(rowEl);
+  });
+  renderKeyboardStatus();
+}
+
+function renderKeyboardStatus() {
+  const colorFor = {
+    correct: "bg-brand-500 text-slate-950 hover:bg-brand-500",
+    present: "bg-yellow-400 text-slate-950 hover:bg-yellow-400",
+    absent:  "bg-slate-900 text-slate-600 hover:bg-slate-900"
+  };
+  document.querySelectorAll("#keyboard button[data-key]").forEach(btn => {
+    const key = btn.dataset.key;
+    const status = state.keyStatus[key];
+    const mark = state.manualKeyMarks[key];
+
+    let classes = keyBaseClass(key) + " " + (status ? colorFor[status] : "bg-slate-800 shadow-key hover:bg-slate-700");
+    // Real system feedback always wins over a player's own guess-note.
+    if (!status && mark && mark !== "none") {
+      classes += " " + MARK_RING_MAP[mark].join(" ");
+    }
+    btn.className = classes;
+  });
+}
+
+function updateGuessCounter() {
+  document.getElementById("guess-counter").textContent =
+    `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
+}
+
+function renderStats() {
+  const titleEl = document.getElementById("stats-title");
+  const footnoteEl = document.getElementById("stats-footnote");
+  const s = authUser && authStats
+    ? { played: authStats.games_played, wins: authStats.games_won, streak: authStats.current_streak, maxStreak: authStats.max_streak, hintsUsed: authStats.total_hints_used || 0 }
+    : sessionStats;
+
+  titleEl.textContent = authUser ? "Your Stats" : "Your Stats (this session)";
+  footnoteEl.textContent = authUser
+    ? "Synced to your account — carries over to any device you sign into."
+    : "Session-only — sign in to save your stats across devices.";
+
+  document.getElementById("stat-played").textContent = s.played;
+  document.getElementById("stat-winpct").textContent =
+    s.played ? Math.round((s.wins / s.played) * 100) + "%" : "0%";
+  document.getElementById("stat-streak").textContent = s.streak;
+  document.getElementById("stat-maxstreak").textContent = s.maxStreak;
+  document.getElementById("stat-hints").textContent = s.hintsUsed || 0;
+}
+
+// ---- Auth UI (header button, sign-in modal, leaderboard) -------------------
+
+function renderAuthUI() {
+  const signinBtn = document.getElementById("btn-signin");
+  const accountBtn = document.getElementById("btn-account");
+  if (authUser) {
+    signinBtn.hidden = true;
+    accountBtn.hidden = false;
+    document.getElementById("account-username").textContent = authProfile ? authProfile.username : authUser.email;
+    document.getElementById("account-streak").textContent = authStats && authStats.current_streak ? `🔥${authStats.current_streak}` : "";
+  } else {
+    signinBtn.hidden = false;
+    accountBtn.hidden = true;
+  }
+}
+
+let signinMode = "signin"; // "signin" | "signup"
+function setSigninMode(mode) {
+  signinMode = mode;
+  document.getElementById("signin-title").textContent = mode === "signup" ? "Create Account" : "Sign In";
+  document.getElementById("signin-submit").textContent = mode === "signup" ? "Create Account" : "Sign In";
+  document.getElementById("signin-toggle-mode").textContent =
+    mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account";
+  document.getElementById("signin-username").classList.toggle("hidden", mode !== "signup");
+  document.getElementById("signin-error").classList.add("hidden");
+}
+
+document.getElementById("signin-toggle-mode").addEventListener("click", () => {
+  setSigninMode(signinMode === "signup" ? "signin" : "signup");
+});
+
+document.getElementById("signin-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("signin-email").value.trim();
+  const password = document.getElementById("signin-password").value;
+  const username = document.getElementById("signin-username").value.trim();
+  const errorEl = document.getElementById("signin-error");
+  const submitBtn = document.getElementById("signin-submit");
+  errorEl.classList.add("hidden");
+  submitBtn.disabled = true;
+
+  try {
+    if (signinMode === "signup") {
+      if (!username) throw new Error("Pick a username");
+      const { error } = await sbClient.auth.signUp({
+        email, password,
+        options: { data: { username } },
+      });
+      if (error) throw error;
+      showToast("Account created! Check your email if confirmation is required.");
+    } else {
+      const { error } = await sbClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      showToast("Signed in!");
+    }
+    await checkSession();
+    closeModals();
+    document.getElementById("signin-form").reset();
+    // Re-evaluate whether today's puzzle is already solved on another device.
+    startNewGame();
+  } catch (err) {
+    errorEl.textContent = err.message || "Something went wrong.";
+    errorEl.classList.remove("hidden");
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+document.getElementById("btn-account").addEventListener("click", async () => {
+  const { error } = await sbClient.auth.signOut();
+  if (!error) {
+    authUser = null; authProfile = null; authStats = null;
+    renderAuthUI();
+    showToast("Signed out");
+  }
+});
+
+async function renderLeaderboard() {
+  const listEl = document.getElementById("leaderboard-list");
+  listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">Loading…</p>';
+
+  const { data, error } = await sbClient
+    .from("user_stats")
+    .select("user_id, current_streak, max_streak, games_won, profiles(username)")
+    .order("current_streak", { ascending: false })
+    .limit(10);
+
+  if (error || !data || !data.length) {
+    listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">No streaks yet — be the first!</p>';
+    return;
+  }
+
+  listEl.innerHTML = "";
+  data.forEach((row, i) => {
+    const name = row.profiles ? row.profiles.username : "Player";
+    const item = document.createElement("div");
+    item.className = "flex items-center justify-between rounded-xl px-2 py-1.5 text-[13px]" +
+      (authUser && row.user_id === authUser.id ? " bg-brand-500/10 text-brand-400" : " text-slate-300");
+    item.innerHTML = `<span class="flex items-center gap-2"><span class="w-4 text-right text-slate-500">${i + 1}</span>${name}</span><span class="font-semibold">🔥${row.current_streak}</span>`;
+    listEl.appendChild(item);
+  });
+}
+
+let toastTimer = null;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.remove("opacity-0", "scale-95");
+  toast.classList.add("opacity-100", "scale-100");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("opacity-100", "scale-100");
+    toast.classList.add("opacity-0", "scale-95");
+  }, 1400);
+}
+
+function showPostGame(won) {
+  const panel = document.getElementById("post-game");
+  const msg = document.getElementById("post-game-message");
+  const wordEl = document.getElementById("post-game-word");
+  msg.textContent = won ? `Solved in ${state.guesses.length}/${MAX_GUESSES}! 🎉` : "Out of guesses!";
+  wordEl.textContent = state.hintsUsed
+    ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)`
+    : `The word was ${state.target}.`;
+  panel.classList.remove("hidden");
+  panel.classList.add("flex");
+}
+
+function hidePostGame() {
+  const panel = document.getElementById("post-game");
+  panel.classList.add("hidden");
+  panel.classList.remove("flex");
+}
+
+function buildShareText() {
+  const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) || "⬜");
+  const hintNote = state.hintsUsed ? ` (${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""})` : "";
+  return [`Wordstake ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines].join("\n");
+}
+
+// ---- Input wiring --------------------------------------------------------
+
+function handleKey(key) {
+  if (key === "ENTER") return submitGuess();
+  if (key === "BACK") return deleteLetter();
+  if (/^[A-Z]$/.test(key)) return addLetter(key);
+}
+
+document.addEventListener("keydown", (e) => {
+  const k = e.key.toUpperCase();
+  if (k === "ENTER") return handleKey("ENTER");
+  if (k === "BACKSPACE") return handleKey("BACK");
+  if (/^[A-Z]$/.test(k)) return handleKey(k);
+});
+
+// Any <button> a player clicks (an on-screen keyboard key, the Easy Mode
+// toggle, Copy Result, etc.) keeps browser focus afterward — and a focused
+// <button> auto-activates on a physical Enter press. Without this, clicking
+// an on-screen letter with the mouse and then pressing physical Enter to
+// submit would ALSO re-click that letter (typing it a second time), and
+// clicking the Easy Mode toggle then pressing Enter to submit a guess would
+// silently flip Easy Mode back off. Blurring right after every button click
+// removes that stale focus so only the intended action fires.
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (btn) btn.blur();
+});
+
+document.getElementById("btn-copy-result").addEventListener("click", async () => {
+  const text = buildShareText();
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Result copied!");
+  } catch {
+    showToast("Copy failed — select manually");
+  }
+});
+
+// ---- Modal plumbing (Phase 1 shells) --------------------------------------
+
+const modals = {
+  signin: document.getElementById("modal-signin"),
+  leaderboard: document.getElementById("modal-leaderboard"),
+  stats: document.getElementById("modal-stats"),
+};
+const backdrop = document.getElementById("modal-backdrop");
+
+function openModal(name) {
+  backdrop.classList.remove("hidden");
+  modals[name].classList.remove("hidden");
+  modals[name].classList.add("flex");
+}
+function closeModals() {
+  backdrop.classList.add("hidden");
+  Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); });
+}
+
+document.getElementById("btn-signin").addEventListener("click", () => { setSigninMode("signin"); openModal("signin"); });
+document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
+document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
+backdrop.addEventListener("click", closeModals);
+document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
+
+// ---- Game bootstrap --------------------------------------------------------
+
+async function startNewGame() {
+  const target = await fetchDailyWord();
+
+  state = {
+    target,
+    targetLetters: target.split(""),
+    row: 0,
+    col: 0,
+    currentGuess: Array(WORD_LENGTH).fill(""),
+    guesses: [],
+    gameOver: false,
+    won: false,
+    keyStatus: {},
+    submittedRows: new Set(),
+    manualTileMarks: {},
+    manualKeyMarks: {},
+    hintsUsed: 0,
+    hintedLetters: {}
+  };
+
+  buildGrid();
+  buildSidebar();
+  buildKeyboard();
+  updateGuessCounter();
+  updateHintUI();
+  hidePostGame();
+  refreshEasyModeAffordances();
+
+  if (DEBUG_REVEAL_ANSWER) {
+    console.log("%c[dev] target word:", "color:#16a34a", state.target);
+  }
+
+  // If this signed-in player already completed today's puzzle (e.g. on
+  // another device), replay their stored guesses instead of letting them
+  // play again — the daily word is shared, so a second attempt would be
+  // trivial once the first attempt's colors are known.
+  const existing = await fetchTodaysCompletedGame();
+  if (existing) {
+    replayCompletedGame(existing);
+  }
+}
+
+// Reconstructs the board from a previously-saved game_history row so a
+// player revisiting today's puzzle (new tab, new device) sees their result
+// instead of being able to replay the already-solved word.
+function replayCompletedGame(gameRow) {
+  const guesses = Array.isArray(gameRow.guesses) ? gameRow.guesses : [];
+  guesses.forEach((g, row) => {
+    const guessArr = g.word.split("");
+    const { exact, present, letterResult } = scoreGuess(guessArr, state.targetLetters);
+    state.row = row;
+    state.currentGuess = guessArr;
+    for (let c = 0; c < WORD_LENGTH; c++) renderTile(row, c, guessArr[c], "filled");
+    state.guesses.push({ word: g.word, exact, present });
+    state.submittedRows.add(row);
+    updateKeyStatus(guessArr, letterResult);
+    renderSidebarRow(row, exact, present);
+    markRowFilled(row);
+  });
+  renderKeyboardStatus();
+  refreshEasyModeAffordances();
+  state.gameOver = true;
+  state.won = gameRow.won;
+  state.row = guesses.length;
+  state.hintsUsed = gameRow.hints_used || 0;
+  updateHintUI();
+  showToast(
+    state.hintsUsed
+      ? `You already played today's word (used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}) — come back tomorrow!`
+      : "You already played today's word — come back tomorrow!"
+  );
+  showPostGame(gameRow.won);
+}
+
+// Establish the auth session before fetching today's word so a signed-in
+// player's "already played today" check is accurate on first load.
+checkSession().then(startNewGame);
+</script>
+</body>
+</html>

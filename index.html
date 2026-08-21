@@ -3,30 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Wordstake — Never Lose Your Streak</title>
-<meta name="description" content="Wordstake is a free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again. 5 letters, 8 guesses, a twist: you only see how many letters you got right, never which ones." />
+<title>Wordstake | Keep Your Streak</title>
+<meta name="description" content="Wordstake is a free daily word game. You get 8 tries to find a 5-letter word. We show how many letters match, but not which ones." />
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://REPLACE_WITH_DOMAIN/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Wordstake" />
-<meta property="og:title" content="Wordstake — Never Lose Your Streak" />
+<meta property="og:title" content="Wordstake | Keep Your Streak" />
 <meta property="og:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
 <meta property="og:url" content="https://REPLACE_WITH_DOMAIN/" />
 <meta property="og:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Wordstake — Never Lose Your Streak" />
+<meta name="twitter:title" content="Wordstake | Keep Your Streak" />
 <meta name="twitter:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
 <meta name="twitter:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
-<meta name="theme-color" content="#0a0a0b" />
+<meta name="theme-color" content="#212121" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2322b352'/%3E%3Ctext x='16' y='23' font-size='18' font-weight='700' font-family='Arial,sans-serif' fill='%230a0a0b' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Wordstake","description":"A free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again.","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Wordstake","description":"A free daily word game with accounts, streaks, and a mystery-count twist.","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script>
+(() => {
+  const savedTheme = localStorage.getItem("wordstake_theme");
+  const theme = savedTheme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  document.documentElement.dataset.theme = theme;
+})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/theme.css" />
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-brand-500/30 bg-[radial-gradient(ellipse_70%_45%_at_50%_-8%,rgba(48,209,88,0.10),transparent),radial-gradient(ellipse_50%_35%_at_85%_105%,rgba(255,255,255,0.035),transparent)] bg-fixed">
 <header class="sticky top-0 z-30 border-b border-white/[0.06] bg-slate-950/50 backdrop-blur-2xl">
@@ -38,6 +46,7 @@
 <nav class="flex items-center gap-1">
 <button id="btn-stats" title="Stats" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>
 <button id="btn-leaderboard" title="Leaderboard" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg></button>
+<button id="btn-theme" type="button" title="Use light mode" aria-label="Use light mode" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><span id="theme-icon" aria-hidden="true">☀</span></button>
 <button id="btn-signin" class="ml-1.5 rounded-full bg-slate-100 px-4 py-2 text-[13px] font-semibold text-slate-950 transition hover:bg-white">Sign In</button>
 <div id="account-menu-wrap" hidden class="relative ml-1.5">
 <button id="btn-account" aria-haspopup="menu" aria-expanded="false" class="flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-2 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span><span class="text-[10px] text-slate-500">▼</span></button>
@@ -55,19 +64,19 @@
 <div class="flex w-full items-center justify-between">
 <span class="flex items-center gap-2.5">
 <span id="guess-counter" class="text-[13px] font-medium text-slate-400">Guess 1 of 8</span>
-<button id="btn-hint" type="button" title="Reveal a letter — counts against your score" class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
+<button id="btn-hint" type="button" title="Show one letter. It counts as a hint." class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
 </span>
 <span class="flex items-center gap-3 text-[12px] text-slate-500">
 <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-brand-400"></span>Exact</span>
 <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-yellow-400"></span>Present</span>
 </span>
 </div>
-<div class="flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
+<div class="mode-panel flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
 <label class="flex cursor-pointer items-center gap-2.5">
 <button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button>
 <span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
 </label>
-<span class="hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Reveals which letters are right (green) or misplaced (yellow) — leave it off for mystery-count mode</span>
+<span class="mode-help hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Turn this on to see which letters match. Leave it off for the full challenge.</span>
 </div>
 <div class="flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
@@ -120,7 +129,7 @@
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-4 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Refer a Friend</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
 <p class="text-[13px] leading-relaxed text-slate-400">When a new player signs up with your link, you both permanently get one extra hint per game.</p>
-<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p class="text-[10px] uppercase tracking-wide text-slate-500">Your referral code</p><p id="referral-code" class="mt-1 font-mono text-lg font-semibold tracking-wider text-brand-400">—</p></div>
+<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p class="text-[10px] uppercase tracking-wide text-slate-500">Your referral code</p><p id="referral-code" class="mt-1 font-mono text-lg font-semibold tracking-wider text-brand-400">Not ready</p></div>
 <button id="btn-copy-referral" class="mt-3 w-full rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Copy Invite Link</button>
 </div></div>
 <div id="modal-leaderboard" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
@@ -147,7 +156,7 @@
 <div><p id="stat-maxstreak" class="text-[22px] font-semibold tracking-tight text-slate-50">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Max Streak</p></div>
 <div><p id="stat-hints" class="text-[22px] font-semibold tracking-tight text-yellow-400">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Hints</p></div>
 </div>
-<p id="stats-footnote" class="mt-5 text-center text-[12px] leading-relaxed text-slate-500">Session-only — sign in to save your stats across devices.</p>
+<p id="stats-footnote" class="mt-5 text-center text-[12px] leading-relaxed text-slate-500">Sign in to save your stats on every device.</p>
 </div>
 </div>
 <script src="/words.js"></script>
@@ -234,7 +243,7 @@ function setEasyMode(on) {
   easyModeKnob.classList.toggle("translate-x-4", on);
   easyModeKnob.classList.toggle("translate-x-0.5", !on);
   // Toggling mid-game must retroactively recolor every already-submitted
-  // row AND the keyboard — Hard Mode shows no real feedback at all, only
+  // row and the keyboard. Hard Mode shows no real feedback, only
   // the aggregate sidebar counts.
   state.guesses.forEach((g, i) => finalizeRow(i, g.letterResult || []));
   renderKeyboardStatus();
@@ -392,7 +401,7 @@ function renderTile(row, col, letter, mode) {
   else { tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10"); tile.classList.add("border-slate-700"); }
 }
 // Rebuilds the full result-color class set from scratch every time
-// (rather than patching an already-mutated class list) — a partial
+// instead of patching an already changed class list. A partial
 // remove/add here previously left a stray bg-yellow-400 class stuck on a
 // tile forever after leaving Easy Mode, since it was never in the
 // removal list. Same bug class as any "two colors fighting over cascade
@@ -409,7 +418,7 @@ function finalizeRow(row, letterResult) {
       else if (status === "present") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key");
       else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
     } else {
-      // Hard Mode: no real per-letter feedback at all — only the
+      // Hard Mode shows no real per-letter feedback, only the
       // aggregate sidebar counts. Tiles settle to neutral.
       tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
     }
@@ -464,12 +473,25 @@ function updateGuessCounter() {
     ? `Completed in ${state.guesses.length} of ${MAX_GUESSES}`
     : `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
 }
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("wordstake_theme", theme);
+  const isLight = theme === "light";
+  const button = document.getElementById("btn-theme");
+  document.getElementById("theme-icon").textContent = isLight ? "☾" : "☀";
+  button.title = isLight ? "Use dark mode" : "Use light mode";
+  button.setAttribute("aria-label", button.title);
+  document.querySelector('meta[name="theme-color"]').content = isLight ? "#f7f7f8" : "#212121";
+}
+document.getElementById("btn-theme").addEventListener("click", () => {
+  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+});
 function renderStats() {
   const titleEl = document.getElementById("stats-title");
   const footnoteEl = document.getElementById("stats-footnote");
   const s = authUser && authStats ? { played: authStats.games_played, wins: authStats.games_won, streak: authStats.current_streak, maxStreak: authStats.max_streak, hintsUsed: authStats.total_hints_used || 0 } : sessionStats;
   titleEl.textContent = authUser ? "Your Stats" : "Your Stats (this session)";
-  footnoteEl.textContent = authUser ? "Synced to your account — carries over to any device you sign into." : "Session-only — sign in to save your stats across devices.";
+  footnoteEl.textContent = authUser ? "Your stats are saved on every device." : "Sign in to save your stats on every device.";
   document.getElementById("stat-played").textContent = s.played;
   document.getElementById("stat-winpct").textContent = s.played ? Math.round((s.wins / s.played) * 100) + "%" : "0%";
   document.getElementById("stat-streak").textContent = s.streak;
@@ -606,7 +628,7 @@ async function renderLeaderboard() {
   const listEl = document.getElementById("leaderboard-list");
   listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">Loading…</p>';
   const { data, error } = await sbClient.from("user_stats").select("user_id, current_streak, max_streak, games_won, profiles(username)").order("current_streak", { ascending: false }).limit(10);
-  if (error || !data || !data.length) { listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">No streaks yet — be the first!</p>'; return; }
+  if (error || !data || !data.length) { listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">No streaks yet. You can be first!</p>'; return; }
   listEl.innerHTML = "";
   data.forEach((row, i) => {
     const name = row.profiles ? row.profiles.username : "Player";
@@ -660,7 +682,7 @@ document.addEventListener("click", (e) => { const btn = e.target.closest("button
 document.getElementById("btn-copy-result").addEventListener("click", async () => {
   const text = buildShareText();
   try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
-  catch { showToast("Copy failed — select manually"); }
+  catch { showToast("Copy failed. Try again."); }
 });
 document.getElementById("btn-share").addEventListener("click", async () => {
   const text = buildShareText();
@@ -713,9 +735,10 @@ function replayCompletedGame(gameRow) {
   state.row = guesses.length;
   state.hintsUsed = gameRow.hints_used || 0;
   updateHintUI(); updateGuessCounter();
-  showToast(state.hintsUsed ? `You already played today's word (used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}) — come back tomorrow!` : "You already played today's word — come back tomorrow!");
+  showToast(state.hintsUsed ? `You played today and used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}. Come back tomorrow!` : "You already played today. Come back tomorrow!");
   showPostGame(gameRow.won);
 }
+setTheme(document.documentElement.dataset.theme || "dark");
 checkSession().then(startNewGame);
 </script>
 </body>

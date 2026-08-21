@@ -59,7 +59,7 @@
 </nav>
 </div>
 </header>
-<div id="toast" class="pointer-events-none fixed left-1/2 top-20 z-40 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
+<div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
 <main class="mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
 <div class="flex w-full items-center justify-between">
 <span class="flex items-center gap-2.5">
@@ -547,7 +547,9 @@ let signinMode = "signin";
 function setSigninMode(mode) {
   signinMode = mode;
   document.getElementById("signin-title").textContent = mode === "signup" ? "Create Account" : "Sign In";
-  document.getElementById("signin-submit").textContent = mode === "signup" ? "Create Account" : "Sign In";
+  const submitBtn = document.getElementById("signin-submit");
+  submitBtn.textContent = mode === "signup" ? "Create Account" : "Sign In";
+  submitBtn.classList.remove("hidden");
   document.getElementById("signin-toggle-mode").textContent = mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account";
   document.getElementById("signin-username").classList.toggle("hidden", mode !== "signup");
   document.getElementById("signin-referral").classList.toggle("hidden", mode !== "signup");
@@ -618,7 +620,8 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
         document.getElementById("signin-password").value = "";
         successEl.textContent = `Account created. Check ${identifier} for a confirmation email, then come back and sign in. Your referral bonus is saved.`;
         successEl.classList.remove("hidden");
-        submitBtn.textContent = "Send Again";
+        submitBtn.classList.add("hidden");
+        document.getElementById("signin-toggle-mode").textContent = "Already confirmed? Sign in";
         return;
       }
       showToast("Account created!");
@@ -631,7 +634,10 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
     document.getElementById("signin-form").reset();
     startNewGame();
   } catch (err) {
-    errorEl.textContent = err.message || "Something went wrong.";
+    const isEmailLimit = err?.code === "over_email_send_rate_limit" || /email rate limit exceeded/i.test(err?.message || "");
+    errorEl.textContent = isEmailLimit
+      ? "Too many confirmation emails were requested. Wait a few minutes, then use the newest email already sent."
+      : err?.message || "Something went wrong.";
     errorEl.classList.remove("hidden");
   } finally {
     submitBtn.disabled = false;
@@ -676,7 +682,18 @@ function referralUrl() {
 }
 document.getElementById("btn-copy-referral").addEventListener("click", async () => {
   if (!authProfile?.referral_code) return showToast("Referral code unavailable");
-  await navigator.clipboard.writeText(referralUrl()); showToast("Invite link copied!");
+  const button = document.getElementById("btn-copy-referral");
+  try {
+    await navigator.clipboard.writeText(referralUrl());
+    button.textContent = "✓ Link Copied";
+    button.disabled = true;
+    showToast("Invite link copied!");
+    setTimeout(() => { button.textContent = "Copy Invite Link"; button.disabled = false; }, 2200);
+  } catch {
+    button.textContent = "Copy Failed";
+    showToast("Copy failed. Try again.");
+    setTimeout(() => { button.textContent = "Copy Invite Link"; }, 2200);
+  }
 });
 document.getElementById("btn-postgame-invite").addEventListener("click", () => {
   if (!authUser) {
@@ -709,7 +726,7 @@ function showToast(message) {
   toast.classList.remove("opacity-0", "scale-95");
   toast.classList.add("opacity-100", "scale-100");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toast.classList.remove("opacity-100", "scale-100"); toast.classList.add("opacity-0", "scale-95"); }, 1400);
+  toastTimer = setTimeout(() => { toast.classList.remove("opacity-100", "scale-100"); toast.classList.add("opacity-0", "scale-95"); }, 2200);
 }
 function showPostGame(won) {
   const panel = document.getElementById("post-game");

@@ -67,7 +67,7 @@
 <button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button>
 <span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
 </label>
-<span class="hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Reveals which letters are right (green) or misplaced (yellow), like classic Wordle — off keeps it Word500-style</span>
+<span class="hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Reveals which letters are right (green) or misplaced (yellow) — leave it off for mystery-count mode</span>
 </div>
 <div class="flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
@@ -193,7 +193,10 @@ sbClient.auth.onAuthStateChange((_event, session) => {
     const pendingReferral = localStorage.getItem("wordstake_pending_referral");
     if (authUser && pendingReferral) {
       try { await redeemReferral(pendingReferral); localStorage.removeItem("wordstake_pending_referral"); await loadProfileAndStats(); }
-      catch (error) { console.warn("[wordstake] referral redemption pending:", error); }
+      catch (error) {
+        console.warn("[wordstake] referral redemption pending:", error);
+        if (error.referralTerminal) { localStorage.removeItem("wordstake_pending_referral"); showToast(error.message); }
+      }
     }
     renderAuthUI();
   });
@@ -499,32 +502,23 @@ function setSigninMode(mode) {
 }
 async function resolveLoginEmail(identifier) {
   if (identifier.includes("@")) return identifier;
-  const argNames = ["username_input", "input_username", "p_username", "username"];
-  let lastError;
-  for (const name of argNames) {
-    const { data, error } = await sbClient.rpc("get_email_for_username", { [name]: identifier });
-    if (!error) {
-      const email = typeof data === "string" ? data : data?.email;
-      if (email) return email;
-      throw new Error("No account found for that username");
-    }
-    lastError = error;
-    if (!/parameter|function|argument/i.test(error.message || "")) break;
-  }
-  throw lastError || new Error("No account found for that username");
+  const { data, error } = await sbClient.rpc("get_email_for_username", { p_username: identifier });
+  if (error) throw error;
+  if (!data) throw new Error("No account found for that username");
+  return data;
 }
 async function redeemReferral(code) {
   if (!code) return;
   const clean = code.trim().toUpperCase();
-  const argNames = ["referral_code_input", "input_code", "p_referral_code", "code"];
-  let lastError;
-  for (const name of argNames) {
-    const { error } = await sbClient.rpc("redeem_referral", { [name]: clean });
-    if (!error) return;
-    lastError = error;
-    if (!/parameter|function|argument/i.test(error.message || "")) break;
+  const { data, error } = await sbClient.rpc("redeem_referral", { p_code: clean });
+  if (error) throw error;
+  if (data?.success === false) {
+    const messages = { invalid_code: "That referral code is invalid", self_referral: "You cannot use your own referral code", already_redeemed: "A referral has already been used on this account", not_signed_in: "Sign in to redeem this referral" };
+    const referralError = new Error(messages[data.reason] || "Referral could not be redeemed");
+    referralError.referralTerminal = data.reason !== "not_signed_in";
+    throw referralError;
   }
-  throw lastError;
+  return data;
 }
 document.getElementById("signin-toggle-mode").addEventListener("click", () => { setSigninMode(signinMode === "signup" ? "signin" : "signup"); });
 document.getElementById("signin-form").addEventListener("submit", async (e) => {
@@ -543,7 +537,10 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
       if (error) throw error;
       const referral = document.getElementById("signin-referral").value || new URLSearchParams(location.search).get("ref");
       if (referral) {
-        if (data.session) await redeemReferral(referral);
+        if (data.session) {
+          try { await redeemReferral(referral); }
+          catch (referralError) { showToast(referralError.message); }
+        }
         else localStorage.setItem("wordstake_pending_referral", referral.trim().toUpperCase());
       }
       showToast("Account created! Check your email if confirmation is required.");

@@ -19,7 +19,13 @@ html[data-theme="light"] {
 }
 html[data-theme="light"] body.bg-slate-950 { background-color: var(--page) !important; }
 
-html, body { min-height: 100%; background: var(--page); }
+html, body {
+  min-height: 100%;
+  max-width: 100%;
+  background: var(--page);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 body {
   min-height: 100dvh;
   overflow-x: hidden;
@@ -184,6 +190,9 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
 }
 
 @media (max-width: 768px) and (pointer: coarse) {
+  input,
+  select,
+  textarea { font-size: 16px !important; }
   #keyboard { display: none !important; }
   .mobile-input-help { display: block; margin-top: -.25rem; }
   .mobile-guess-input {

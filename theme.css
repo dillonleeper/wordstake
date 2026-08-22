@@ -32,7 +32,6 @@ header {
   background: color-mix(in srgb, var(--page) 88%, transparent) !important;
   border-color: var(--border) !important;
 }
-.mode-panel,
 #post-game,
 #account-dropdown,
 [id^="modal-"]:not(#modal-backdrop) > div {
@@ -43,7 +42,8 @@ input {
   background: color-mix(in srgb, var(--surface-strong) 88%, transparent) !important;
   border-color: var(--border) !important;
 }
-#btn-theme { min-width: 38px; font-size: 18px; line-height: 1; }
+#btn-help, #btn-settings { min-width: 38px; }
+.translate-x-5 { transform: translateX(1.25rem); }
 #btn-account { border: 1px solid transparent; }
 .mobile-guess-input,
 .mobile-input-help { display: none; }
@@ -84,14 +84,13 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
   header > div { padding: .75rem; }
   header nav { gap: 0; }
   header nav > button { padding: .4rem !important; }
-  #btn-theme { min-width: 31px; }
+  #btn-help, #btn-settings { min-width: 31px; }
   #btn-signin { margin-left: .25rem; padding: .45rem .75rem; }
   #btn-signin, #guess-counter, #btn-hint { white-space: nowrap; flex-shrink: 0; }
   #account-menu-wrap { margin-left: .25rem; }
   #btn-account { gap: .35rem; padding: .35rem .45rem .35rem .65rem; }
   #account-username { max-width: 72px; }
   main { gap: 1.15rem !important; padding: 1.25rem .75rem !important; }
-  .mode-panel { padding: .7rem .8rem; }
   #grid, #sidebar { gap: 6px !important; }
   #grid > div { gap: 6px !important; }
   #grid > div > div {

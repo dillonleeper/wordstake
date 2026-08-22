@@ -44,9 +44,10 @@
 <span class="text-[15px] font-semibold tracking-tight text-slate-100">Word<span class="font-medium text-slate-400">stake</span></span>
 </div>
 <nav class="flex items-center gap-1">
+<button id="btn-help" type="button" title="How to play" aria-label="How to play" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-.9.5-1.4 1-1.4 2.1M12 17h.01"/></svg></button>
 <button id="btn-stats" title="Stats" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>
 <button id="btn-leaderboard" title="Leaderboard" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg></button>
-<button id="btn-theme" type="button" title="Use light mode" aria-label="Use light mode" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><span id="theme-icon" aria-hidden="true">☀</span></button>
+<button id="btn-settings" type="button" title="Settings" aria-label="Settings" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.38.36.72.66 1 .3.28.68.42 1.1.4H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/></svg></button>
 <button id="btn-signin" class="ml-1.5 rounded-full bg-slate-100 px-4 py-2 text-[13px] font-semibold text-slate-950 transition hover:bg-white">Sign In</button>
 <div id="account-menu-wrap" hidden class="relative ml-1.5">
 <button id="btn-account" aria-haspopup="menu" aria-expanded="false" class="flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-2 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span><span class="text-[10px] text-slate-500">▼</span></button>
@@ -70,13 +71,6 @@
 <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-brand-400"></span>Exact</span>
 <span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-yellow-400"></span>Present</span>
 </span>
-</div>
-<div class="mode-panel flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
-<label class="flex cursor-pointer items-center gap-2.5">
-<button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button>
-<span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
-</label>
-<span id="mode-help" class="mode-help max-w-[220px] text-right text-[11px] leading-snug text-slate-500">In Hard Mode, tap submitted tiles to mark them yellow or green.</span>
 </div>
 <div class="flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
@@ -105,6 +99,26 @@
 </p>
 </footer>
 <div id="modal-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-md"></div>
+<div id="modal-help" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-5 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">How to Play</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<div class="space-y-5 text-[13px] leading-relaxed text-slate-400">
+<section><h3 class="mb-1 font-semibold text-slate-100">Find the five-letter word</h3><p>You get 8 guesses. Each guess must be a real five-letter word.</p></section>
+<section><h3 class="mb-2 font-semibold text-slate-100">Read the two numbers</h3><div class="space-y-2"><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400"></span><span><strong class="text-slate-200">Exact</strong> means a letter is correct and in the right spot.</span></p><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400"></span><span><strong class="text-slate-200">Present</strong> means a correct letter is in the wrong spot.</span></p></div></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">The challenge</h3><p>Wordstake does not tell you which letters matched. Use the totals to narrow down the answer.</p></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">Mark your clues</h3><p>Tap a submitted tile once for yellow, again for green, and once more for gray. These marks are your private notes.</p></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">Need help?</h3><p>Use a hint to reveal one letter. Easy Mode can also show every matching tile. Turn it on in Settings.</p></section>
+</div>
+</div></div>
+<div id="modal-settings" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-3 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">Settings</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<div class="divide-y divide-white/10">
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Easy Mode</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Shows which letters are exact or present.</p></div><button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" aria-label="Easy Mode" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Dark Theme</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Use the darker screen colors.</p></div><button id="dark-theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark Theme" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-brand-500 transition-colors duration-200"><span id="dark-theme-knob" class="inline-block h-5 w-5 translate-x-5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
+</div>
+<p class="pt-3 text-center text-[11px] text-slate-600">Hard Mode is the default Wordstake experience.</p>
+</div></div>
 <div id="modal-signin" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-5 flex items-center justify-between">
@@ -236,19 +250,17 @@ function updateKeyStatus(guessArr, letterResult) {
   const rank = { absent: 0, present: 1, correct: 2 };
   guessArr.forEach((letter, i) => { const newStatus = letterResult[i]; const current = state.keyStatus[letter]; if (!current || rank[newStatus] > rank[current]) state.keyStatus[letter] = newStatus; });
 }
-let easyMode = false;
+let easyMode = localStorage.getItem("wordstake_easy_mode") === "true";
 const easyModeToggle = document.getElementById("easy-mode-toggle");
 const easyModeKnob = document.getElementById("easy-mode-knob");
 function setEasyMode(on) {
   easyMode = on;
+  localStorage.setItem("wordstake_easy_mode", String(on));
   easyModeToggle.setAttribute("aria-checked", String(on));
   easyModeToggle.classList.toggle("bg-brand-500", on);
   easyModeToggle.classList.toggle("bg-slate-700", !on);
   easyModeKnob.classList.toggle("translate-x-4", on);
   easyModeKnob.classList.toggle("translate-x-0.5", !on);
-  document.getElementById("mode-help").textContent = on
-    ? "Easy Mode shows which letters match."
-    : "In Hard Mode, tap submitted tiles to mark them yellow or green.";
   // Toggling mid-game must retroactively recolor every already-submitted
   // row and the keyboard. Hard Mode shows no real feedback, only
   // the aggregate sidebar counts.
@@ -512,13 +524,16 @@ function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("wordstake_theme", theme);
   const isLight = theme === "light";
-  const button = document.getElementById("btn-theme");
-  document.getElementById("theme-icon").textContent = isLight ? "☾" : "☀";
-  button.title = isLight ? "Use dark mode" : "Use light mode";
-  button.setAttribute("aria-label", button.title);
+  const darkToggle = document.getElementById("dark-theme-toggle");
+  const darkKnob = document.getElementById("dark-theme-knob");
+  darkToggle.setAttribute("aria-checked", String(!isLight));
+  darkToggle.classList.toggle("bg-brand-500", !isLight);
+  darkToggle.classList.toggle("bg-slate-700", isLight);
+  darkKnob.classList.toggle("translate-x-5", !isLight);
+  darkKnob.classList.toggle("translate-x-0.5", isLight);
   document.querySelector('meta[name="theme-color"]').content = isLight ? "#f7f7f8" : "#212121";
 }
-document.getElementById("btn-theme").addEventListener("click", () => {
+document.getElementById("dark-theme-toggle").addEventListener("click", () => {
   setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
 });
 function renderStats() {
@@ -800,11 +815,13 @@ document.getElementById("btn-share").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
   catch { showToast("Sharing isn't available here"); }
 });
-const modals = { signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
+const modals = { help: document.getElementById("modal-help"), settings: document.getElementById("modal-settings"), signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
 function openModal(name) { mobileGuessInput.blur(); backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
 function closeModals() { backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
 document.getElementById("btn-signin").addEventListener("click", () => { setSigninMode("signin"); openModal("signin"); });
+document.getElementById("btn-help").addEventListener("click", () => openModal("help"));
+document.getElementById("btn-settings").addEventListener("click", () => openModal("settings"));
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
 document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
 backdrop.addEventListener("click", closeModals);
@@ -813,6 +830,7 @@ async function startNewGame() {
   const target = await fetchDailyWord();
   state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
+  setEasyMode(easyMode);
   if (usesNativeKeyboard()) setTimeout(focusMobileKeyboard, 250);
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
   const existing = await fetchTodaysCompletedGame();

@@ -17,7 +17,7 @@
 <meta name="twitter:title" content="Wordstake | Keep Your Streak" />
 <meta name="twitter:description" content="8 tries. One 5-letter word. You only get match counts, so every guess is a puzzle. Free and no ads." />
 <meta name="twitter:image" content="https://word-stake.com/og-image.png" />
-<meta name="theme-color" content="#f7f6f2" />
+<meta name="theme-color" content="#212121" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2322b352'/%3E%3Ctext x='16' y='23' font-size='18' font-weight='700' font-family='Arial,sans-serif' fill='%230a0a0b' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Wordstake","url":"https://word-stake.com/","description":"A free daily 5-letter word guessing game that gives match counts instead of letter positions.","applicationCategory":"GameApplication","genre":"Word game","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
@@ -36,11 +36,11 @@
 <link rel="stylesheet" href="/styles.css" />
 <link rel="stylesheet" href="/theme.css" />
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-brand-500/30">
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-brand-500/30 bg-[radial-gradient(ellipse_70%_45%_at_50%_-8%,rgba(48,209,88,0.10),transparent),radial-gradient(ellipse_50%_35%_at_85%_105%,rgba(255,255,255,0.035),transparent)] bg-fixed">
 <header class="sticky top-0 z-30 border-b border-white/[0.06] bg-slate-950/50 backdrop-blur-2xl">
-<div class="game-shell mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
-<div class="brand-lockup flex items-center gap-2.5">
-<div class="brand-key grid h-7 w-7 place-items-center rounded-[9px] bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-slate-950">W</div>
+<div class="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
+<div class="flex items-center gap-2.5">
+<div class="grid h-7 w-7 place-items-center rounded-[9px] bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_4px_12px_-4px_rgba(48,209,88,0.55)]">W</div>
 <span class="text-[15px] font-semibold tracking-tight text-slate-100">Word<span class="font-medium text-slate-400">stake</span></span>
 </div>
 <nav class="flex items-center gap-1">
@@ -61,23 +61,33 @@
 </div>
 </header>
 <div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
-<main id="game-page" class="game-shell mx-auto flex max-w-2xl flex-col items-center">
-<div id="game-tools">
-<span id="guess-counter" class="sr-only">Guess 1 of 8</span>
-<button id="btn-hint" type="button" title="Use a hint" aria-label="Use a hint" class="hint-key"><span aria-hidden="true">💡</span><span id="hint-label">3</span></button>
+<main class="mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
+<div class="game-tower flex w-full items-center justify-between">
+<span class="flex items-center gap-2.5">
+<span id="guess-counter" class="text-[13px] font-medium text-slate-400">Guess 1 of 8</span>
+<button id="btn-hint" type="button" title="Show one letter. It counts as a hint." class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
+</span>
+<span class="flex items-center gap-3 text-[12px] text-slate-500">
+<span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-brand-400"></span>Exact</span>
+<span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-yellow-400"></span>Present</span>
+</span>
 </div>
-<div id="board-wrap" class="game-tower flex w-full items-start justify-center">
+<div class="game-tower flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
 <div id="sidebar" class="flex flex-col gap-2"></div>
 </div>
 <div id="keyboard" class="game-tower mt-1 flex w-full flex-col items-center gap-2"></div>
 <input id="mobile-guess-input" class="mobile-guess-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Type your guess" />
-<div id="post-game" class="game-tower hidden w-full items-center justify-between animate-rise" aria-live="polite">
-<div class="result-copy">
+<p id="mobile-input-help" class="mobile-input-help text-center text-[11px] leading-snug text-slate-500">Tap the grid to type. Tap submitted tiles to mark them.</p>
+<div id="post-game" class="game-tower hidden w-full flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl animate-rise">
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
+<div class="mt-4 flex w-full gap-2">
+<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Share Result</button>
+<button id="btn-copy-result" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Copy</button>
 </div>
-<button id="btn-share" class="action-key">Share</button>
+<button id="btn-postgame-invite" class="mt-2 w-full rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2.5 text-[12px] font-semibold text-yellow-300 transition hover:bg-yellow-400/15">Invite a friend. You both get +1 hint every game.</button>
+<p class="mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow for a new word.</p>
 </div>
 </main>
 <footer class="mx-auto mt-2 flex max-w-2xl flex-col items-center gap-1 px-5 py-8 text-center text-[12px] text-slate-600">
@@ -106,13 +116,6 @@
 <div class="divide-y divide-white/10">
 <div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Easy Mode</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Shows which letters are exact or present.</p></div><button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" aria-label="Easy Mode" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
 <div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Dark Theme</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Use the darker screen colors.</p></div><button id="dark-theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark Theme" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-brand-500 transition-colors duration-200"><span id="dark-theme-knob" class="inline-block h-5 w-5 translate-x-5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
-</div>
-<div class="settings-links" aria-label="More options">
-<button id="settings-open-help" type="button">How to Play</button>
-<button id="settings-open-stats" type="button">Stats</button>
-<button id="settings-open-leaderboard" type="button">Leaderboard</button>
-<a href="/terms.html">Terms</a>
-<a href="/privacy.html">Privacy</a>
 </div>
 <p class="pt-3 text-center text-[11px] text-slate-600">Hard Mode is the default Wordstake experience.</p>
 </div></div>
@@ -292,9 +295,7 @@ function updateHintUI() {
   if (!btn || !label) return;
   const remaining = hintsRemaining();
   btn.disabled = state.gameOver || remaining <= 0 || firstOpenCol() >= WORD_LENGTH;
-  label.textContent = remaining;
-  btn.setAttribute("aria-label", state.gameOver ? "Hints unavailable after the game" : `${remaining} hint${remaining === 1 ? "" : "s"} left`);
-  btn.hidden = state.gameOver;
+  label.textContent = state.gameOver ? "Hints locked" : (remaining > 0 ? `Hint (${remaining} left)` : "No hints left");
 }
 function applyHintedLettersToRow(row) {
   Object.entries(state.hintedLetters).forEach(([colStr, letter]) => { const col = Number(colStr); state.currentGuess[col] = letter; renderTile(row, col, letter, "hint"); });
@@ -358,7 +359,6 @@ function endGame(won) {
   renderStats();
   submitGameResult({ word: state.target, solved: won, guessesTaken: state.guesses.length, hintsUsed: state.hintsUsed });
   showPostGame(won);
-  if (won) celebrateWin();
 }
 async function submitGameResult(result) {
   if (!authUser) { showToast(result.solved ? "Nice! Sign in to save your streak." : "Sign in to save your streak."); return; }
@@ -391,12 +391,11 @@ function buildGrid() {
   grid.innerHTML = "";
   for (let r = 0; r < MAX_GUESSES; r++) {
     const rowEl = document.createElement("div");
-    rowEl.className = "guess-row"; rowEl.id = `row-${r}`;
+    rowEl.className = "flex gap-2"; rowEl.id = `row-${r}`;
     for (let c = 0; c < WORD_LENGTH; c++) {
       const tile = document.createElement("div");
       tile.id = `tile-${r}-${c}`;
-      tile.className = "guess-tile keycap";
-      tile.dataset.state = "empty";
+      tile.className = "grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl border-2 border-slate-700 text-[22px] font-semibold uppercase tracking-tight text-slate-50 transition-colors duration-150";
       tile.setAttribute("role", "button");
       tile.tabIndex = -1;
       tile.setAttribute("aria-label", `Empty tile ${c + 1}`);
@@ -418,8 +417,8 @@ function buildSidebar() {
   for (let r = 0; r < MAX_GUESSES; r++) {
     const cell = document.createElement("div");
     cell.id = `sidebar-${r}`;
-    cell.className = "feedback-readout";
-    cell.textContent = "";
+    cell.className = "flex h-11 sm:h-12 min-w-[62px] items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-2 text-[13px] font-semibold tabular-nums text-slate-500";
+    cell.textContent = "–";
     sidebar.appendChild(cell);
   }
 }
@@ -427,9 +426,9 @@ function renderTile(row, col, letter, mode) {
   const tile = document.getElementById(`tile-${row}-${col}`);
   tile.textContent = letter;
   tile.setAttribute("aria-label", letter ? `${letter}, current guess` : `Empty tile ${col + 1}`);
-  tile.dataset.state = mode === "filled" ? "typed" : mode;
-  tile.classList.remove("tile-pop");
-  if (letter) { void tile.offsetWidth; tile.classList.add("tile-pop"); }
+  if (mode === "filled") { tile.classList.add("border-slate-400", "bg-slate-800", "animate-pop"); tile.classList.remove("border-slate-700", "border-yellow-400", "bg-yellow-400/10"); }
+  else if (mode === "hint") { tile.classList.add("border-yellow-400", "bg-yellow-400/10", "animate-pop"); tile.classList.remove("border-slate-700", "border-slate-400", "bg-slate-800"); }
+  else { tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10"); tile.classList.add("border-slate-700"); }
 }
 function manualMarkKey(row, col) { return `${row}-${col}`; }
 function handleTilePress(row, col) {
@@ -450,29 +449,32 @@ function cycleManualMark(row, col) {
 // removal list. Same bug class as any "two colors fighting over cascade
 // order" issue: always fully clear every possible color class first.
 function finalizeRow(row, letterResult) {
+  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700", "cursor-pointer"];
   for (let c = 0; c < WORD_LENGTH; c++) {
     const tile = document.getElementById(`tile-${row}-${c}`);
     if (!tile) continue;
+    tile.classList.remove(...COLOR_CLASSES);
     if (easyMode) {
       const status = letterResult[c];
-      tile.dataset.state = status;
+      if (status === "correct") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key");
+      else if (status === "present") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key");
+      else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
       tile.tabIndex = -1;
       tile.setAttribute("aria-label", `${tile.textContent}, ${status}`);
     } else {
       const mark = state.manualMarks[manualMarkKey(row, c)] || "gray";
-      tile.dataset.state = mark === "yellow" ? "present" : mark === "green" ? "correct" : "absent";
+      if (mark === "yellow") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else if (mark === "green") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key", "cursor-pointer");
       tile.tabIndex = 0;
       tile.setAttribute("aria-label", `${tile.textContent}, marked ${mark}. Activate to change the mark.`);
     }
-    tile.style.setProperty("--reveal-delay", `${c * 60}ms`);
-    tile.classList.remove("tile-reveal");
-    void tile.offsetWidth;
-    tile.classList.add("tile-reveal");
   }
 }
 function renderSidebarRow(row, exact, present) {
   const cell = document.getElementById(`sidebar-${row}`);
-  cell.innerHTML = `<span class="feedback-exact" aria-label="${exact} exact">${exact}</span><span class="feedback-present" aria-label="${present} present">${present}</span>`;
+  cell.classList.remove("text-slate-600");
+  cell.innerHTML = `<span class="flex items-center gap-1 text-brand-400"><span class="h-[6px] w-[6px] rounded-full bg-brand-400"></span>${exact}</span><span class="flex items-center gap-1 text-yellow-400"><span class="h-[6px] w-[6px] rounded-full bg-yellow-400"></span>${present}</span>`;
 }
 function shakeRow(row) {
   const rowEl = document.getElementById(`row-${row}`);
@@ -481,21 +483,20 @@ function shakeRow(row) {
 }
 const KEY_ROWS = [["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["ENTER","Z","X","C","V","B","N","M","BACK"]];
 function keyBaseClass(key) {
-  return `keyboard-key keycap${key === "ENTER" || key === "BACK" ? " keyboard-key-action" : ""}`;
+  const isWide = key === "ENTER" || key === "BACK";
+  return ["select-none rounded-xl font-medium text-slate-100 transition-all duration-150 ease-out active:scale-[0.94]", isWide ? "px-3.5 text-[11px] sm:text-[13px] h-11 sm:h-12" : "h-11 w-8 sm:h-12 sm:w-10 text-[14px] sm:text-[15px]"].join(" ");
 }
 function buildKeyboard() {
   const kb = document.getElementById("keyboard");
   kb.innerHTML = "";
   KEY_ROWS.forEach(row => {
     const rowEl = document.createElement("div");
-    rowEl.className = "keyboard-row";
+    rowEl.className = "flex w-full justify-center gap-1.5";
     row.forEach(key => {
       const btn = document.createElement("button");
       btn.dataset.key = key;
       btn.textContent = key === "BACK" ? "⌫" : (key === "ENTER" ? "Enter" : key);
-      btn.className = keyBaseClass(key);
-      btn.dataset.state = "unused";
-      btn.setAttribute("aria-label", key === "BACK" ? "Backspace" : key === "ENTER" ? "Enter guess" : key);
+      btn.className = keyBaseClass(key) + " bg-slate-800 shadow-key hover:bg-slate-700";
       btn.addEventListener("click", () => handleKey(key));
       rowEl.appendChild(btn);
     });
@@ -504,14 +505,14 @@ function buildKeyboard() {
   renderKeyboardStatus();
 }
 function renderKeyboardStatus() {
+  const colorFor = { correct: "bg-brand-500 text-slate-950 hover:bg-brand-500", present: "bg-yellow-400 text-slate-950 hover:bg-yellow-400", absent: "bg-slate-900 text-slate-600 hover:bg-slate-900" };
   document.querySelectorAll("#keyboard button[data-key]").forEach(btn => {
     const key = btn.dataset.key;
     // Real system feedback only ever renders in Easy Mode. Hard Mode
     // tracks state.keyStatus underneath (so it's ready the moment the
     // player switches modes) but never shows it on the keyboard.
     const status = easyMode ? state.keyStatus[key] : undefined;
-    btn.className = keyBaseClass(key);
-    btn.dataset.state = status || "unused";
+    btn.className = keyBaseClass(key) + " " + (status ? colorFor[status] : "bg-slate-800 shadow-key hover:bg-slate-700");
   });
 }
 function updateGuessCounter() {
@@ -530,7 +531,7 @@ function setTheme(theme) {
   darkToggle.classList.toggle("bg-slate-700", isLight);
   darkKnob.classList.toggle("translate-x-5", !isLight);
   darkKnob.classList.toggle("translate-x-0.5", isLight);
-  document.querySelector('meta[name="theme-color"]').content = isLight ? "#f7f6f2" : "#20211f";
+  document.querySelector('meta[name="theme-color"]').content = isLight ? "#f7f7f8" : "#212121";
 }
 document.getElementById("dark-theme-toggle").addEventListener("click", () => {
   setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
@@ -709,6 +710,16 @@ document.getElementById("btn-copy-referral").addEventListener("click", async () 
     setTimeout(() => { button.textContent = "Copy Invite Link"; }, 2200);
   }
 });
+document.getElementById("btn-postgame-invite").addEventListener("click", () => {
+  if (!authUser) {
+    setSigninMode("signup");
+    openModal("signin");
+    showToast("Create an account to earn bonus hints with friends");
+    return;
+  }
+  document.getElementById("referral-code").textContent = authProfile?.referral_code || "Unavailable";
+  openModal("referral");
+});
 async function renderLeaderboard() {
   const listEl = document.getElementById("leaderboard-list");
   listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">Loading…</p>';
@@ -736,8 +747,8 @@ function showPostGame(won) {
   const panel = document.getElementById("post-game");
   const msg = document.getElementById("post-game-message");
   const wordEl = document.getElementById("post-game-word");
-  msg.textContent = won ? `Solved in ${state.guesses.length}/${MAX_GUESSES} 🎉` : "Out of guesses";
-  wordEl.textContent = won ? (state.hintsUsed ? `${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""} used` : "") : `The word was ${state.target}`;
+  msg.textContent = won ? `Solved in ${state.guesses.length}/${MAX_GUESSES}! 🎉` : "Out of guesses!";
+  wordEl.textContent = state.hintsUsed ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)` : `The word was ${state.target}.`;
   panel.classList.remove("hidden");
   panel.classList.add("flex");
 }
@@ -753,37 +764,13 @@ function buildShareText() {
   return [`Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines, "Can you beat me?", "https://word-stake.com"].join("\n");
 }
 function handleKey(key) {
-  pressKeyVisual(key);
   if (key === "ENTER") return submitGuess();
   if (key === "BACK") return deleteLetter();
   if (/^[A-Z]$/.test(key)) return addLetter(key);
 }
-function pressKeyVisual(key) {
-  const btn = document.querySelector(`#keyboard button[data-key="${key}"]`);
-  if (!btn) return;
-  btn.classList.remove("key-pressed");
-  void btn.offsetWidth;
-  btn.classList.add("key-pressed");
-  setTimeout(() => btn.classList.remove("key-pressed"), 110);
-}
-function celebrateWin() {
-  const row = Math.max(0, state.guesses.length - 1);
-  for (let c = 0; c < WORD_LENGTH; c++) {
-    const tile = document.getElementById(`tile-${row}-${c}`);
-    if (!tile) continue;
-    tile.style.setProperty("--celebrate-delay", `${c * 65}ms`);
-    tile.classList.add("tile-celebrate");
-  }
-  const burst = document.createElement("div");
-  burst.className = "confetti-burst";
-  burst.setAttribute("aria-hidden", "true");
-  burst.innerHTML = Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join("");
-  document.body.appendChild(burst);
-  setTimeout(() => burst.remove(), 1000);
-}
 const mobileGuessInput = document.getElementById("mobile-guess-input");
 const mobileKeyboardQuery = matchMedia("(max-width: 768px) and (pointer: coarse)");
-function usesNativeKeyboard() { return false; }
+function usesNativeKeyboard() { return mobileKeyboardQuery.matches; }
 function focusMobileKeyboard() {
   if (!usesNativeKeyboard() || state.gameOver || !document.getElementById("modal-backdrop").classList.contains("hidden")) return;
   mobileGuessInput.focus({ preventScroll: true });
@@ -814,6 +801,11 @@ document.addEventListener("keydown", (e) => {
   if (/^[A-Z]$/.test(k)) return handleKey(k);
 });
 document.addEventListener("click", (e) => { const btn = e.target.closest("button"); if (btn) btn.blur(); });
+document.getElementById("btn-copy-result").addEventListener("click", async () => {
+  const text = buildShareText();
+  try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
+  catch { showToast("Copy failed. Try again."); }
+});
 document.getElementById("btn-share").addEventListener("click", async () => {
   const text = buildShareText();
   if (navigator.share) {
@@ -832,9 +824,6 @@ document.getElementById("btn-help").addEventListener("click", () => openModal("h
 document.getElementById("btn-settings").addEventListener("click", () => openModal("settings"));
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
 document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
-document.getElementById("settings-open-help").addEventListener("click", () => { closeModals(); openModal("help"); });
-document.getElementById("settings-open-stats").addEventListener("click", () => { closeModals(); renderStats(); openModal("stats"); });
-document.getElementById("settings-open-leaderboard").addEventListener("click", () => { closeModals(); openModal("leaderboard"); renderLeaderboard(); });
 backdrop.addEventListener("click", closeModals);
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
 async function startNewGame() {

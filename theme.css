@@ -45,6 +45,32 @@ input {
 #btn-help, #btn-settings { min-width: 38px; }
 .translate-x-5 { transform: translateX(1.25rem); }
 #btn-account { border: 1px solid transparent; }
+.game-tower { max-width: 360px; }
+#grid > div > div,
+#sidebar > div,
+#keyboard button,
+#post-game { box-shadow: none !important; }
+#keyboard > div {
+  display: grid !important;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 4px !important;
+  width: 100%;
+}
+#keyboard button {
+  grid-column: span 2;
+  min-width: 0;
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-radius: 9px !important;
+}
+#keyboard > div:nth-child(2)::before,
+#keyboard > div:nth-child(2)::after {
+  content: "";
+  grid-column: span 1;
+}
+#keyboard button[data-key="ENTER"],
+#keyboard button[data-key="BACK"] { grid-column: span 3; }
 .mobile-guess-input,
 .mobile-input-help { display: none; }
 
@@ -70,6 +96,12 @@ html[data-theme="light"] .border-white\/\[0\.06\] { border-color: #d9d9df !impor
 html[data-theme="light"] #btn-signin { background: #2f2f2f !important; color: #fff !important; }
 html[data-theme="light"] #btn-account,
 html[data-theme="light"] #btn-share { background: #e9e9ee !important; color: #2f2f2f !important; }
+html[data-theme="light"] #btn-hint {
+  color: #805500 !important;
+  background: #fff7df !important;
+  border-color: #e4c56c !important;
+}
+html[data-theme="light"] #btn-hint:disabled { opacity: .78 !important; }
 html[data-theme="light"] #modal-backdrop { background: rgba(31, 31, 31, .28) !important; }
 html[data-theme="light"] #grid .bg-slate-800,
 html[data-theme="light"] #keyboard .bg-slate-800,
@@ -107,10 +139,9 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
     padding-right: .35rem;
   }
   #grid + #sidebar { margin-left: -2px; }
-  #keyboard { gap: 6px !important; }
+  #keyboard { gap: 5px !important; }
   #keyboard > div { gap: 3px !important; }
   #keyboard button {
-    width: clamp(25px, calc((100vw - 60px) / 10), 36px) !important;
     height: 42px !important;
     padding: 0 !important;
     border-radius: 9px !important;
@@ -118,7 +149,6 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
   }
   #keyboard button[data-key="ENTER"],
   #keyboard button[data-key="BACK"] {
-    width: clamp(42px, 14vw, 62px) !important;
     font-size: 11px !important;
   }
   #post-game { padding: 1.1rem; border-radius: 20px; }

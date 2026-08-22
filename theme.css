@@ -476,19 +476,45 @@ footer { display: none !important; }
 @media (max-width: 480px) {
   body::before { width: 170px; height: 170px; left: -70px; top: 22%; }
   body::after { width: 140px; height: 140px; right: -55px; bottom: 20%; }
-  .game-main { gap: 16px !important; padding-top: 20px !important; }
-  .game-tools { top: 14px; right: 18px; }
+  .game-main {
+    gap: 12px !important;
+    padding: 14px 8px 18px !important;
+    overflow-x: clip;
+  }
+  .game-tools {
+    top: 10px;
+    left: 8px;
+    right: auto;
+  }
+  #btn-hint {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+  .board-stage {
+    position: relative;
+    width: 100% !important;
+    max-width: none !important;
+    justify-content: center !important;
+  }
   #grid, #sidebar, #grid > div { gap: 6px !important; }
   #grid > div > div {
-    width: clamp(36px, 11.3vw, 45px) !important;
-    height: clamp(36px, 11.2vw, 45px) !important;
+    width: clamp(40px, 13vw, 51px) !important;
+    height: clamp(40px, 13vw, 51px) !important;
     border-radius: 12px !important;
-    font-size: 20px !important;
+    font-size: clamp(20px, 6vw, 23px) !important;
+  }
+  #sidebar {
+    position: absolute;
+    top: 0;
+    left: calc(50% + min(32.5vw, 127.5px) + 8px);
+    z-index: 2;
   }
   #sidebar > div {
     min-width: 43px !important;
-    height: clamp(36px, 11.2vw, 45px) !important;
+    height: clamp(40px, 13vw, 51px) !important;
   }
+  .mobile-input-help { margin-top: 2px !important; }
   #post-game { padding-top: 8px !important; }
   #post-game-message { font-size: 25px !important; }
 }

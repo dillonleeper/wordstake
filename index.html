@@ -3,30 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Wordstake — Never Lose Your Streak</title>
-<meta name="description" content="Wordstake is a free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again. 5 letters, 8 guesses, a twist: you only see how many letters you got right, never which ones." />
+<title>Wordstake | Keep Your Streak</title>
+<meta name="description" content="Play Wordstake, a free daily 5-letter word guessing game. Get 8 tries and only match counts, not letter positions. No ads." />
 <meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://REPLACE_WITH_DOMAIN/" />
+<link rel="canonical" href="https://word-stake.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Wordstake" />
-<meta property="og:title" content="Wordstake — Never Lose Your Streak" />
-<meta property="og:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
-<meta property="og:url" content="https://REPLACE_WITH_DOMAIN/" />
-<meta property="og:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
+<meta property="og:title" content="Wordstake | Keep Your Streak" />
+<meta property="og:description" content="8 tries. One 5-letter word. You only get match counts, so every guess is a puzzle. Free and no ads." />
+<meta property="og:url" content="https://word-stake.com/" />
+<meta property="og:image" content="https://word-stake.com/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Wordstake — Never Lose Your Streak" />
-<meta name="twitter:description" content="A free daily word-guessing game with real accounts. Play anywhere, keep your streak everywhere." />
-<meta name="twitter:image" content="https://REPLACE_WITH_DOMAIN/og-image.png" />
-<meta name="theme-color" content="#0a0a0b" />
+<meta name="twitter:title" content="Wordstake | Keep Your Streak" />
+<meta name="twitter:description" content="8 tries. One 5-letter word. You only get match counts, so every guess is a puzzle. Free and no ads." />
+<meta name="twitter:image" content="https://word-stake.com/og-image.png" />
+<meta name="theme-color" content="#212121" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2322b352'/%3E%3Ctext x='16' y='23' font-size='18' font-weight='700' font-family='Arial,sans-serif' fill='%230a0a0b' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Wordstake","description":"A free daily word-guessing game with real accounts — play on your phone, check your streak on desktop, never lose your progress again.","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Wordstake","url":"https://word-stake.com/","description":"A free daily 5-letter word guessing game that gives match counts instead of letter positions.","applicationCategory":"GameApplication","genre":"Word game","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script>
+(() => {
+  const savedTheme = localStorage.getItem("wordstake_theme");
+  const theme = savedTheme || "light";
+  document.documentElement.dataset.theme = theme;
+})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/styles.css" />
+<link rel="stylesheet" href="/theme.css" />
 <!-- Vercel Web Analytics (plain-HTML integration — no build step/npm here,
      so this is the correct snippet rather than the React/Next.js one). -->
 <script>
@@ -39,48 +47,48 @@
 <div class="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
 <div class="flex items-center gap-2.5">
 <div class="grid h-7 w-7 place-items-center rounded-[9px] bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_4px_12px_-4px_rgba(48,209,88,0.55)]">W</div>
-<span class="text-[15px] font-semibold tracking-tight text-slate-100">Word<span class="font-medium text-slate-400">stake</span></span>
+<span class="wordmark text-[15px] font-semibold tracking-tight text-slate-100">Wordstake</span>
 </div>
 <nav class="flex items-center gap-1">
+<button id="btn-help" type="button" title="How to play" aria-label="How to play" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-.9.5-1.4 1-1.4 2.1M12 17h.01"/></svg></button>
 <button id="btn-stats" title="Stats" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>
 <button id="btn-leaderboard" title="Leaderboard" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg></button>
+<button id="btn-settings" type="button" title="Settings" aria-label="Settings" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.38.36.72.66 1 .3.28.68.42 1.1.4H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/></svg></button>
 <button id="btn-signin" class="ml-1.5 rounded-full bg-slate-100 px-4 py-2 text-[13px] font-semibold text-slate-950 transition hover:bg-white">Sign In</button>
-<button id="btn-account" hidden class="ml-1.5 flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-1.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span></button>
+<div id="account-menu-wrap" hidden class="relative ml-1.5">
+<button id="btn-account" aria-haspopup="menu" aria-expanded="false" class="flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-3 pr-2 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.1]"><span id="account-streak" class="text-brand-400"></span><span id="account-username" class="max-w-[100px] truncate"></span><span id="account-bonus-badge" hidden title="Referral bonus active" aria-label="Referral bonus active">🎁</span><span class="text-[10px] text-slate-500">▼</span></button>
+<div id="account-dropdown" hidden role="menu" class="absolute right-0 top-[calc(100%+8px)] z-50 w-52 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-glass backdrop-blur-xl">
+<button id="account-referral-bonus" hidden role="menuitem" class="mb-1 w-full rounded-xl border border-brand-400/20 bg-brand-500/10 px-3 py-2 text-left transition hover:bg-brand-500/15"><span class="block text-[12px] font-semibold text-brand-400">🎁 Referral bonus active</span><span id="account-referral-bonus-detail" class="mt-0.5 block text-[11px] text-slate-400"></span></button>
+<button id="btn-edit-profile" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-slate-200 hover:bg-white/[0.06]">Edit Profile</button>
+<button id="btn-refer-friend" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-slate-200 hover:bg-white/[0.06]">Refer a Friend</button>
+<button id="btn-signout" role="menuitem" class="w-full rounded-xl px-3 py-2 text-left text-[13px] text-red-400 hover:bg-white/[0.06]">Sign Out</button>
+</div>
+</div>
 </nav>
 </div>
 </header>
-<div id="toast" class="pointer-events-none fixed left-1/2 top-20 z-40 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
-<main class="mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
-<div class="flex w-full items-center justify-between">
-<span class="flex items-center gap-2.5">
-<span id="guess-counter" class="text-[13px] font-medium text-slate-400">Guess 1 of 8</span>
-<button id="btn-hint" type="button" title="Reveal a letter — counts against your score" class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
-</span>
-<span class="flex items-center gap-3 text-[12px] text-slate-500">
-<span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-brand-400"></span>Exact</span>
-<span class="flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-yellow-400"></span>Present</span>
-</span>
+<div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
+<main class="game-main mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
+<div class="game-tower game-tools flex w-full items-center justify-end">
+<span id="guess-counter" class="sr-only">Guess 1 of 8</span>
+<button id="btn-hint" type="button" title="Show one letter. It counts as a hint." aria-label="Use a hint" class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
 </div>
-<div class="flex w-full items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
-<label class="flex cursor-pointer items-center gap-2.5">
-<button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-4 w-4 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button>
-<span class="text-[13px] font-medium text-slate-200">Easy Mode</span>
-</label>
-<span class="hidden text-right text-[11px] leading-snug text-slate-500 sm:block sm:max-w-[220px]">Reveals which letters are right (green) or misplaced (yellow), like classic Wordle — off keeps it Word500-style</span>
-</div>
-<div class="flex w-full items-start justify-center gap-3 sm:gap-4">
+<div class="game-tower board-stage flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
 <div id="sidebar" class="flex flex-col gap-2"></div>
 </div>
-<div id="keyboard" class="mt-1 flex w-full max-w-lg flex-col items-center gap-2"></div>
-<div id="post-game" class="hidden w-full max-w-lg flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-glass backdrop-blur-xl animate-rise">
+<div id="keyboard" class="game-tower mt-1 flex w-full flex-col items-center gap-2"></div>
+<input id="mobile-guess-input" class="mobile-guess-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Type your guess" />
+<p id="mobile-input-help" class="mobile-input-help text-center text-[11px] leading-snug text-slate-500">Tap the grid to type. Tap submitted tiles to mark them.</p>
+<div id="post-game" class="game-tower hidden w-full flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl animate-rise">
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
 <div class="mt-4 flex w-full gap-2">
-<button id="btn-copy-result" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Copy Result</button>
-<button id="btn-challenge" disabled title="Ships in Phase 3 with account system" class="flex-1 cursor-not-allowed rounded-full bg-white/[0.06] px-4 py-2.5 text-[13px] font-semibold text-slate-500">Challenge a Friend 🔒</button>
+<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Share Result</button>
+<button id="btn-copy-result" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Copy</button>
 </div>
-<p class="mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow for a new word.</p>
+<button id="btn-postgame-invite" class="postgame-invite mt-2 w-full rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2.5 text-[12px] font-semibold text-yellow-300 transition hover:bg-yellow-400/15">Invite a friend</button>
+<p class="tomorrow-note mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow</p>
 </div>
 </main>
 <footer class="mx-auto mt-2 flex max-w-2xl flex-col items-center gap-1 px-5 py-8 text-center text-[12px] text-slate-600">
@@ -92,6 +100,26 @@
 </p>
 </footer>
 <div id="modal-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-md"></div>
+<div id="modal-help" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-5 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">How to Play</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<div class="space-y-5 text-[13px] leading-relaxed text-slate-400">
+<section><h3 class="mb-1 font-semibold text-slate-100">Find the five-letter word</h3><p>You get 8 guesses. Each guess must be a real five-letter word.</p></section>
+<section><h3 class="mb-2 font-semibold text-slate-100">Read the two numbers</h3><div class="space-y-2"><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400"></span><span><strong class="text-slate-200">Exact</strong> means a letter is correct and in the right spot.</span></p><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400"></span><span><strong class="text-slate-200">Present</strong> means a correct letter is in the wrong spot.</span></p></div></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">The challenge</h3><p>Wordstake does not tell you which letters matched. Use the totals to narrow down the answer.</p></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">Mark your clues</h3><p>Tap a submitted tile once for yellow, again for green, and once more for gray. These marks are your private notes.</p></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">Need help?</h3><p>Use a hint to reveal one letter. Easy Mode can also show every matching tile. Turn it on in Settings.</p></section>
+</div>
+</div></div>
+<div id="modal-settings" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-3 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">Settings</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<div class="divide-y divide-white/10">
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Easy Mode</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Shows which letters are exact or present.</p></div><button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" aria-label="Easy Mode" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Dark Theme</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Use the darker screen colors.</p></div><button id="dark-theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark Theme" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-brand-500 transition-colors duration-200"><span id="dark-theme-knob" class="inline-block h-5 w-5 translate-x-5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
+</div>
+<p class="pt-3 text-center text-[11px] text-slate-600">Hard Mode is the default Wordstake experience.</p>
+</div></div>
 <div id="modal-signin" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-5 flex items-center justify-between">
@@ -100,15 +128,30 @@
 </div>
 <form id="signin-form" class="flex flex-col gap-2.5">
 <input id="signin-username" type="text" placeholder="Username" autocomplete="username" class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
-<input id="signin-email" type="email" placeholder="Email" autocomplete="email" required class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+<input id="signin-email" type="text" placeholder="Username or email" autocomplete="username" required class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <input id="signin-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="6" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
+<input id="signin-referral" type="text" placeholder="Referral code (optional)" autocomplete="off" class="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] uppercase text-slate-100 outline-none transition placeholder:normal-case placeholder:text-slate-500 focus:border-brand-400/60 focus:bg-white/[0.06]" />
 <p id="signin-error" class="hidden text-center text-[12px] leading-relaxed text-red-400"></p>
+<p id="signin-success" class="hidden rounded-xl border border-brand-400/20 bg-brand-500/10 px-3.5 py-3 text-center text-[13px] leading-relaxed text-brand-300"></p>
 <button id="signin-submit" type="submit" class="mt-1 rounded-full bg-brand-500 px-3.5 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Sign In</button>
 <button id="signin-toggle-mode" type="button" class="mt-1 text-center text-[12px] leading-relaxed text-slate-500 transition hover:text-slate-300">New here? Create an account</button>
 <p class="mt-1 text-center text-[11px] leading-relaxed text-slate-600">By continuing, you agree to our <a href="/terms.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Terms</a> and <a href="/privacy.html" class="text-slate-400 underline decoration-dotted hover:text-slate-200">Privacy Policy</a>.</p>
 </form>
 </div>
 </div>
+<div id="modal-profile" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-5 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Edit Profile</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<form id="profile-form" class="flex flex-col gap-2.5"><label for="profile-username" class="text-[12px] text-slate-400">Username</label><input id="profile-username" required minlength="3" maxlength="24" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none focus:border-brand-400/60"/><p id="profile-error" class="hidden text-[12px] text-red-400"></p><button class="mt-2 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Save</button></form>
+</div></div>
+<div id="modal-referral" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="mb-4 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Refer a Friend</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
+<p class="text-[13px] leading-relaxed text-slate-400">When a new player signs up with your link, you both permanently get one extra hint per game.</p>
+<p id="referral-status" class="mt-3 hidden rounded-xl border border-brand-400/20 bg-brand-500/10 px-3 py-2 text-center text-[12px] font-semibold text-brand-400"></p>
+<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p class="text-[10px] uppercase tracking-wide text-slate-500">Your referral code</p><p id="referral-code" class="mt-1 font-mono text-lg font-semibold tracking-wider text-brand-400">Not ready</p></div>
+<button id="btn-copy-referral" class="mt-3 w-full rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Copy Invite Link</button>
+</div></div>
 <div id="modal-leaderboard" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-3 flex items-center justify-between">
@@ -133,7 +176,7 @@
 <div><p id="stat-maxstreak" class="text-[22px] font-semibold tracking-tight text-slate-50">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Max Streak</p></div>
 <div><p id="stat-hints" class="text-[22px] font-semibold tracking-tight text-yellow-400">0</p><p class="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">Hints</p></div>
 </div>
-<p id="stats-footnote" class="mt-5 text-center text-[12px] leading-relaxed text-slate-500">Session-only — sign in to save your stats across devices.</p>
+<p id="stats-footnote" class="mt-5 text-center text-[12px] leading-relaxed text-slate-500">Sign in to save your stats on every device.</p>
 </div>
 </div>
 <script src="/words.js"></script>
@@ -175,16 +218,26 @@ async function loadProfileAndStats() {
 }
 sbClient.auth.onAuthStateChange((_event, session) => {
   authUser = session ? session.user : null;
-  loadProfileAndStats().then(renderAuthUI);
+  loadProfileAndStats().then(async () => {
+    const pendingReferral = localStorage.getItem("wordstake_pending_referral");
+    if (authUser && pendingReferral) {
+      try { await redeemReferral(pendingReferral); localStorage.removeItem("wordstake_pending_referral"); await loadProfileAndStats(); }
+      catch (error) {
+        console.warn("[wordstake] referral redemption pending:", error);
+        if (error.referralTerminal) { localStorage.removeItem("wordstake_pending_referral"); showToast(error.message); }
+      }
+    }
+    renderAuthUI();
+  });
 });
-const WORD_LENGTH = 5, MAX_GUESSES = 8, MAX_HINTS = 3;
+const WORD_LENGTH = 5, MAX_GUESSES = 8, BASE_MAX_HINTS = 3;
 const DEBUG_REVEAL_ANSWER = false;
 function fallbackWordForDate(dateStr) {
   let hash = 0;
   for (let i = 0; i < dateStr.length; i++) hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
   return ANSWER_WORDS[hash % ANSWER_WORDS.length];
 }
-let state = { target: "", targetLetters: [], row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), hintsUsed: 0, hintedLetters: {} };
+let state = { target: "", targetLetters: [], row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
 let sessionStats = { played: 0, wins: 0, streak: 0, maxStreak: 0, hintsUsed: 0 };
 function scoreGuess(guessArr, targetArr) {
   const target = targetArr.slice(), guess = guessArr.slice();
@@ -199,18 +252,19 @@ function updateKeyStatus(guessArr, letterResult) {
   const rank = { absent: 0, present: 1, correct: 2 };
   guessArr.forEach((letter, i) => { const newStatus = letterResult[i]; const current = state.keyStatus[letter]; if (!current || rank[newStatus] > rank[current]) state.keyStatus[letter] = newStatus; });
 }
-let easyMode = false;
+let easyMode = localStorage.getItem("wordstake_easy_mode") === "true";
 const easyModeToggle = document.getElementById("easy-mode-toggle");
 const easyModeKnob = document.getElementById("easy-mode-knob");
 function setEasyMode(on) {
   easyMode = on;
+  localStorage.setItem("wordstake_easy_mode", String(on));
   easyModeToggle.setAttribute("aria-checked", String(on));
   easyModeToggle.classList.toggle("bg-brand-500", on);
   easyModeToggle.classList.toggle("bg-slate-700", !on);
   easyModeKnob.classList.toggle("translate-x-4", on);
   easyModeKnob.classList.toggle("translate-x-0.5", !on);
   // Toggling mid-game must retroactively recolor every already-submitted
-  // row AND the keyboard — Hard Mode shows no real feedback at all, only
+  // row and the keyboard. Hard Mode shows no real feedback, only
   // the aggregate sidebar counts.
   state.guesses.forEach((g, i) => finalizeRow(i, g.letterResult || []));
   renderKeyboardStatus();
@@ -235,14 +289,15 @@ function deleteLetter() {
   state.currentGuess[c] = "";
   renderTile(state.row, c, "", "empty");
 }
-function hintsRemaining() { return Math.max(0, MAX_HINTS - state.hintsUsed); }
+function maxHints() { return BASE_MAX_HINTS + (authProfile?.bonus_hints || 0); }
+function hintsRemaining() { return Math.max(0, maxHints() - state.hintsUsed); }
 function updateHintUI() {
   const btn = document.getElementById("btn-hint");
   const label = document.getElementById("hint-label");
   if (!btn || !label) return;
   const remaining = hintsRemaining();
   btn.disabled = state.gameOver || remaining <= 0 || firstOpenCol() >= WORD_LENGTH;
-  label.textContent = remaining > 0 ? `Hint (${remaining} left)` : "No hints left";
+  label.textContent = state.gameOver ? "Hints locked" : (remaining > 0 ? `Hint (${remaining} left)` : "No hints left");
 }
 function applyHintedLettersToRow(row) {
   Object.entries(state.hintedLetters).forEach(([colStr, letter]) => { const col = Number(colStr); state.currentGuess[col] = letter; renderTile(row, col, letter, "hint"); });
@@ -290,6 +345,7 @@ async function submitGuess() {
   renderKeyboardStatus();
   renderSidebarRow(state.row, exact, present);
   finalizeRow(state.row, letterResult);
+  animateSubmittedRow(state.row, letterResult);
   if (exact === WORD_LENGTH) { endGame(true); return; }
   state.row++; state.col = 0; state.currentGuess = Array(WORD_LENGTH).fill("");
   if (state.row >= MAX_GUESSES) { endGame(false); return; }
@@ -299,13 +355,14 @@ async function submitGuess() {
 }
 function endGame(won) {
   state.gameOver = true; state.won = won;
-  updateHintUI();
+  updateHintUI(); updateGuessCounter();
   sessionStats.played++;
   sessionStats.hintsUsed += state.hintsUsed;
   if (won) { sessionStats.wins++; sessionStats.streak++; sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak); } else { sessionStats.streak = 0; }
   renderStats();
   submitGameResult({ word: state.target, solved: won, guessesTaken: state.guesses.length, hintsUsed: state.hintsUsed });
   showPostGame(won);
+  if (won) celebrateWin();
 }
 async function submitGameResult(result) {
   if (!authUser) { showToast(result.solved ? "Nice! Sign in to save your streak." : "Sign in to save your streak."); return; }
@@ -343,6 +400,16 @@ function buildGrid() {
       const tile = document.createElement("div");
       tile.id = `tile-${r}-${c}`;
       tile.className = "grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-2xl border-2 border-slate-700 text-[22px] font-semibold uppercase tracking-tight text-slate-50 transition-colors duration-150";
+      tile.setAttribute("role", "button");
+      tile.tabIndex = -1;
+      tile.setAttribute("aria-label", `Empty tile ${c + 1}`);
+      tile.addEventListener("click", () => handleTilePress(r, c));
+      tile.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleTilePress(r, c);
+        }
+      });
       rowEl.appendChild(tile);
     }
     grid.appendChild(rowEl);
@@ -355,25 +422,38 @@ function buildSidebar() {
     const cell = document.createElement("div");
     cell.id = `sidebar-${r}`;
     cell.className = "flex h-11 sm:h-12 min-w-[62px] items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-2 text-[13px] font-semibold tabular-nums text-slate-500";
-    cell.textContent = "–";
+    cell.textContent = "";
     sidebar.appendChild(cell);
   }
 }
 function renderTile(row, col, letter, mode) {
   const tile = document.getElementById(`tile-${row}-${col}`);
   tile.textContent = letter;
+  tile.setAttribute("aria-label", letter ? `${letter}, current guess` : `Empty tile ${col + 1}`);
   if (mode === "filled") { tile.classList.add("border-slate-400", "bg-slate-800", "animate-pop"); tile.classList.remove("border-slate-700", "border-yellow-400", "bg-yellow-400/10"); }
   else if (mode === "hint") { tile.classList.add("border-yellow-400", "bg-yellow-400/10", "animate-pop"); tile.classList.remove("border-slate-700", "border-slate-400", "bg-slate-800"); }
   else { tile.classList.remove("border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10"); tile.classList.add("border-slate-700"); }
 }
+function manualMarkKey(row, col) { return `${row}-${col}`; }
+function handleTilePress(row, col) {
+  if (state.submittedRows.has(row)) cycleManualMark(row, col);
+  else if (row === state.row) focusMobileKeyboard();
+}
+function cycleManualMark(row, col) {
+  if (easyMode || !state.submittedRows.has(row)) return;
+  const key = manualMarkKey(row, col);
+  const current = state.manualMarks[key] || "gray";
+  state.manualMarks[key] = current === "gray" ? "yellow" : current === "yellow" ? "green" : "gray";
+  finalizeRow(row, state.guesses[row]?.letterResult || []);
+}
 // Rebuilds the full result-color class set from scratch every time
-// (rather than patching an already-mutated class list) — a partial
+// instead of patching an already changed class list. A partial
 // remove/add here previously left a stray bg-yellow-400 class stuck on a
 // tile forever after leaving Easy Mode, since it was never in the
 // removal list. Same bug class as any "two colors fighting over cascade
 // order" issue: always fully clear every possible color class first.
 function finalizeRow(row, letterResult) {
-  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700"];
+  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700", "cursor-pointer"];
   for (let c = 0; c < WORD_LENGTH; c++) {
     const tile = document.getElementById(`tile-${row}-${c}`);
     if (!tile) continue;
@@ -383,10 +463,15 @@ function finalizeRow(row, letterResult) {
       if (status === "correct") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key");
       else if (status === "present") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key");
       else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
+      tile.tabIndex = -1;
+      tile.setAttribute("aria-label", `${tile.textContent}, ${status}`);
     } else {
-      // Hard Mode: no real per-letter feedback at all — only the
-      // aggregate sidebar counts. Tiles settle to neutral.
-      tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key");
+      const mark = state.manualMarks[manualMarkKey(row, c)] || "gray";
+      if (mark === "yellow") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else if (mark === "green") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key", "cursor-pointer");
+      tile.tabIndex = 0;
+      tile.setAttribute("aria-label", `${tile.textContent}, marked ${mark}. Activate to change the mark.`);
     }
   }
 }
@@ -399,6 +484,16 @@ function shakeRow(row) {
   const rowEl = document.getElementById(`row-${row}`);
   rowEl.classList.add("animate-shake");
   setTimeout(() => rowEl.classList.remove("animate-shake"), 400);
+}
+function animateSubmittedRow(row, letterResult) {
+  for (let c = 0; c < WORD_LENGTH; c++) {
+    const tile = document.getElementById(`tile-${row}-${c}`);
+    if (!tile) continue;
+    tile.style.setProperty("--reveal-delay", `${c * 55}ms`);
+    tile.classList.remove("tile-reveal", "tile-correct-bounce");
+    void tile.offsetWidth;
+    tile.classList.add(letterResult[c] === "correct" ? "tile-correct-bounce" : "tile-reveal");
+  }
 }
 const KEY_ROWS = [["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["ENTER","Z","X","C","V","B","N","M","BACK"]];
 function keyBaseClass(key) {
@@ -435,14 +530,32 @@ function renderKeyboardStatus() {
   });
 }
 function updateGuessCounter() {
-  document.getElementById("guess-counter").textContent = `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
+  document.getElementById("guess-counter").textContent = state.gameOver
+    ? `Completed in ${state.guesses.length} of ${MAX_GUESSES}`
+    : `Guess ${Math.min(state.row + 1, MAX_GUESSES)} of ${MAX_GUESSES}`;
 }
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("wordstake_theme", theme);
+  const isLight = theme === "light";
+  const darkToggle = document.getElementById("dark-theme-toggle");
+  const darkKnob = document.getElementById("dark-theme-knob");
+  darkToggle.setAttribute("aria-checked", String(!isLight));
+  darkToggle.classList.toggle("bg-brand-500", !isLight);
+  darkToggle.classList.toggle("bg-slate-700", isLight);
+  darkKnob.classList.toggle("translate-x-5", !isLight);
+  darkKnob.classList.toggle("translate-x-0.5", isLight);
+  document.querySelector('meta[name="theme-color"]').content = isLight ? "#f7f7f8" : "#212121";
+}
+document.getElementById("dark-theme-toggle").addEventListener("click", () => {
+  setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
+});
 function renderStats() {
   const titleEl = document.getElementById("stats-title");
   const footnoteEl = document.getElementById("stats-footnote");
   const s = authUser && authStats ? { played: authStats.games_played, wins: authStats.games_won, streak: authStats.current_streak, maxStreak: authStats.max_streak, hintsUsed: authStats.total_hints_used || 0 } : sessionStats;
   titleEl.textContent = authUser ? "Your Stats" : "Your Stats (this session)";
-  footnoteEl.textContent = authUser ? "Synced to your account — carries over to any device you sign into." : "Session-only — sign in to save your stats across devices.";
+  footnoteEl.textContent = authUser ? "Your stats are saved on every device." : "Sign in to save your stats on every device.";
   document.getElementById("stat-played").textContent = s.played;
   document.getElementById("stat-winpct").textContent = s.played ? Math.round((s.wins / s.played) * 100) + "%" : "0%";
   document.getElementById("stat-streak").textContent = s.streak;
@@ -451,41 +564,109 @@ function renderStats() {
 }
 function renderAuthUI() {
   const signinBtn = document.getElementById("btn-signin");
-  const accountBtn = document.getElementById("btn-account");
+  const accountWrap = document.getElementById("account-menu-wrap");
   if (authUser) {
-    signinBtn.hidden = true; accountBtn.hidden = false;
+    signinBtn.hidden = true; accountWrap.hidden = false;
     document.getElementById("account-username").textContent = authProfile ? authProfile.username : authUser.email;
     document.getElementById("account-streak").textContent = authStats && authStats.current_streak ? `🔥${authStats.current_streak}` : "";
-  } else { signinBtn.hidden = false; accountBtn.hidden = true; }
+    const bonus = Number(authProfile?.bonus_hints || 0);
+    document.getElementById("account-bonus-badge").hidden = bonus < 1;
+    document.getElementById("account-referral-bonus").hidden = bonus < 1;
+    document.getElementById("account-referral-bonus-detail").textContent = bonus > 0 ? `+${bonus} hint${bonus === 1 ? "" : "s"} in every game` : "";
+    if (bonus > 0) {
+      const noticeKey = `wordstake_bonus_notice_${authUser.id}_${bonus}`;
+      if (!localStorage.getItem(noticeKey)) {
+        localStorage.setItem(noticeKey, "seen");
+        setTimeout(() => showToast(`🎁 Referral bonus unlocked: +${bonus} hint${bonus === 1 ? "" : "s"} every game`), 350);
+      }
+    }
+  } else { signinBtn.hidden = false; accountWrap.hidden = true; closeAccountMenu(); }
+  updateHintUI();
 }
 let signinMode = "signin";
 function setSigninMode(mode) {
   signinMode = mode;
   document.getElementById("signin-title").textContent = mode === "signup" ? "Create Account" : "Sign In";
-  document.getElementById("signin-submit").textContent = mode === "signup" ? "Create Account" : "Sign In";
+  const submitBtn = document.getElementById("signin-submit");
+  submitBtn.textContent = mode === "signup" ? "Create Account" : "Sign In";
+  submitBtn.classList.remove("hidden");
   document.getElementById("signin-toggle-mode").textContent = mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account";
   document.getElementById("signin-username").classList.toggle("hidden", mode !== "signup");
+  document.getElementById("signin-referral").classList.toggle("hidden", mode !== "signup");
+  const identifier = document.getElementById("signin-email");
+  identifier.type = mode === "signup" ? "email" : "text";
+  identifier.placeholder = mode === "signup" ? "Email" : "Username or email";
+  identifier.autocomplete = mode === "signup" ? "email" : "username";
   document.getElementById("signin-error").classList.add("hidden");
+  document.getElementById("signin-success").classList.add("hidden");
+}
+async function signInWithIdentifier(identifier, password) {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/username-login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+    body: JSON.stringify({ identifier, password })
+  });
+  const result = await response.json();
+  if (!response.ok || !result.session) throw new Error(result.error || "Sign-in failed");
+  const { error } = await sbClient.auth.setSession(result.session);
+  if (error) throw error;
+}
+async function redeemReferral(code) {
+  if (!code) return;
+  const clean = code.trim().toUpperCase();
+  const { data, error } = await sbClient.rpc("redeem_referral", { p_code: clean });
+  if (error) throw error;
+  if (data?.success === false) {
+    const messages = { invalid_code: "That referral code is invalid", self_referral: "You cannot use your own referral code", already_redeemed: "A referral has already been used on this account", not_signed_in: "Sign in to redeem this referral" };
+    const referralError = new Error(messages[data.reason] || "Referral could not be redeemed");
+    referralError.referralTerminal = data.reason !== "not_signed_in";
+    throw referralError;
+  }
+  return data;
 }
 document.getElementById("signin-toggle-mode").addEventListener("click", () => { setSigninMode(signinMode === "signup" ? "signin" : "signup"); });
 document.getElementById("signin-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const email = document.getElementById("signin-email").value.trim();
+  const identifier = document.getElementById("signin-email").value.trim();
   const password = document.getElementById("signin-password").value;
   const username = document.getElementById("signin-username").value.trim();
   const errorEl = document.getElementById("signin-error");
+  const successEl = document.getElementById("signin-success");
   const submitBtn = document.getElementById("signin-submit");
   errorEl.classList.add("hidden");
+  successEl.classList.add("hidden");
   submitBtn.disabled = true;
   try {
     if (signinMode === "signup") {
       if (!username) throw new Error("Pick a username");
-      const { error } = await sbClient.auth.signUp({ email, password, options: { data: { username } } });
+      const { data, error } = await sbClient.auth.signUp({
+        email: identifier,
+        password,
+        options: {
+          data: { username },
+          emailRedirectTo: `${location.origin}/`
+        }
+      });
       if (error) throw error;
-      showToast("Account created! Check your email if confirmation is required.");
+      const referral = document.getElementById("signin-referral").value || new URLSearchParams(location.search).get("ref");
+      if (referral) {
+        if (data.session) {
+          try { await redeemReferral(referral); }
+          catch (referralError) { showToast(referralError.message); }
+        }
+        else localStorage.setItem("wordstake_pending_referral", referral.trim().toUpperCase());
+      }
+      if (!data.session) {
+        document.getElementById("signin-password").value = "";
+        successEl.textContent = `Account created. Check ${identifier} for a confirmation email, then come back and sign in. Your referral bonus is saved.`;
+        successEl.classList.remove("hidden");
+        submitBtn.classList.add("hidden");
+        document.getElementById("signin-toggle-mode").textContent = "Already confirmed? Sign in";
+        return;
+      }
+      showToast("Account created!");
     } else {
-      const { error } = await sbClient.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      await signInWithIdentifier(identifier, password);
       showToast("Signed in!");
     }
     await checkSession();
@@ -493,21 +674,92 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
     document.getElementById("signin-form").reset();
     startNewGame();
   } catch (err) {
-    errorEl.textContent = err.message || "Something went wrong.";
+    const isEmailLimit = err?.code === "over_email_send_rate_limit" || /email rate limit exceeded/i.test(err?.message || "");
+    errorEl.textContent = isEmailLimit
+      ? "Too many confirmation emails were requested. Wait a few minutes, then use the newest email already sent."
+      : err?.message || "Something went wrong.";
     errorEl.classList.remove("hidden");
   } finally {
     submitBtn.disabled = false;
   }
 });
-document.getElementById("btn-account").addEventListener("click", async () => {
+function closeAccountMenu() {
+  const menu = document.getElementById("account-dropdown");
+  const button = document.getElementById("btn-account");
+  if (!menu || !button) return;
+  menu.hidden = true; button.setAttribute("aria-expanded", "false");
+}
+document.getElementById("btn-account").addEventListener("click", (event) => {
+  event.stopPropagation();
+  const menu = document.getElementById("account-dropdown");
+  menu.hidden = !menu.hidden;
+  event.currentTarget.setAttribute("aria-expanded", String(!menu.hidden));
+});
+document.addEventListener("click", closeAccountMenu);
+document.getElementById("btn-signout").addEventListener("click", async () => {
   const { error } = await sbClient.auth.signOut();
   if (!error) { authUser = null; authProfile = null; authStats = null; renderAuthUI(); showToast("Signed out"); }
+});
+document.getElementById("btn-edit-profile").addEventListener("click", () => {
+  closeAccountMenu(); document.getElementById("profile-username").value = authProfile?.username || ""; openModal("profile");
+});
+document.getElementById("btn-refer-friend").addEventListener("click", () => {
+  closeAccountMenu(); showReferralModal();
+});
+document.getElementById("account-referral-bonus").addEventListener("click", () => {
+  closeAccountMenu(); showReferralModal();
+});
+function showReferralModal() {
+  document.getElementById("referral-code").textContent = authProfile?.referral_code || "Unavailable";
+  const status = document.getElementById("referral-status");
+  const bonus = Number(authProfile?.bonus_hints || 0);
+  status.textContent = bonus > 0 ? `Referral bonus active: +${bonus} hint${bonus === 1 ? "" : "s"} every game` : "Invite a friend to unlock a bonus hint";
+  status.classList.remove("hidden");
+  openModal("referral");
+}
+document.getElementById("profile-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const username = document.getElementById("profile-username").value.trim();
+  const errorEl = document.getElementById("profile-error");
+  errorEl.classList.add("hidden");
+  const { data, error } = await sbClient.from("profiles").update({ username }).eq("id", authUser.id).select().single();
+  if (error) { errorEl.textContent = error.message; errorEl.classList.remove("hidden"); return; }
+  authProfile = data; renderAuthUI(); closeModals(); showToast("Profile updated");
+});
+function referralUrl() {
+  const url = new URL(location.origin + location.pathname);
+  url.searchParams.set("ref", authProfile?.referral_code || "");
+  return url.toString();
+}
+document.getElementById("btn-copy-referral").addEventListener("click", async () => {
+  if (!authProfile?.referral_code) return showToast("Referral code unavailable");
+  const button = document.getElementById("btn-copy-referral");
+  try {
+    await navigator.clipboard.writeText(referralUrl());
+    button.textContent = "✓ Link Copied";
+    button.disabled = true;
+    showToast("Invite link copied!");
+    setTimeout(() => { button.textContent = "Copy Invite Link"; button.disabled = false; }, 2200);
+  } catch {
+    button.textContent = "Copy Failed";
+    showToast("Copy failed. Try again.");
+    setTimeout(() => { button.textContent = "Copy Invite Link"; }, 2200);
+  }
+});
+document.getElementById("btn-postgame-invite").addEventListener("click", () => {
+  if (!authUser) {
+    setSigninMode("signup");
+    openModal("signin");
+    showToast("Create an account to earn bonus hints with friends");
+    return;
+  }
+  showReferralModal();
 });
 async function renderLeaderboard() {
   const listEl = document.getElementById("leaderboard-list");
   listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">Loading…</p>';
   const { data, error } = await sbClient.from("user_stats").select("user_id, current_streak, max_streak, games_won, profiles(username)").order("current_streak", { ascending: false }).limit(10);
-  if (error || !data || !data.length) { listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">No streaks yet — be the first!</p>'; return; }
+  if (error || !data || !data.length) { listEl.innerHTML = '<p class="text-[13px] leading-relaxed text-slate-400">No streaks yet. You can be first!</p>'; return; }
   listEl.innerHTML = "";
   data.forEach((row, i) => {
     const name = row.profiles ? row.profiles.username : "Player";
@@ -524,16 +776,24 @@ function showToast(message) {
   toast.classList.remove("opacity-0", "scale-95");
   toast.classList.add("opacity-100", "scale-100");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toast.classList.remove("opacity-100", "scale-100"); toast.classList.add("opacity-0", "scale-95"); }, 1400);
+  toastTimer = setTimeout(() => { toast.classList.remove("opacity-100", "scale-100"); toast.classList.add("opacity-0", "scale-95"); }, 2200);
 }
 function showPostGame(won) {
   const panel = document.getElementById("post-game");
   const msg = document.getElementById("post-game-message");
   const wordEl = document.getElementById("post-game-word");
-  msg.textContent = won ? `Solved in ${state.guesses.length}/${MAX_GUESSES}! 🎉` : "Out of guesses!";
+  msg.textContent = won ? `Nice one. ${state.guesses.length} / ${MAX_GUESSES}` : "Tomorrow is another word.";
   wordEl.textContent = state.hintsUsed ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)` : `The word was ${state.target}.`;
   panel.classList.remove("hidden");
   panel.classList.add("flex");
+}
+function celebrateWin() {
+  const burst = document.createElement("div");
+  burst.className = "celebration-sprinkles";
+  burst.setAttribute("aria-hidden", "true");
+  burst.innerHTML = Array.from({ length: 12 }, (_, i) => `<i style="--i:${i}"></i>`).join("");
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 900);
 }
 function hidePostGame() {
   const panel = document.getElementById("post-game");
@@ -541,16 +801,66 @@ function hidePostGame() {
   panel.classList.remove("flex");
 }
 function buildShareText() {
-  const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) || "⬜");
+  const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) + "⬛".repeat(WORD_LENGTH - g.exact - g.present));
   const hintNote = state.hintsUsed ? ` (${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""})` : "";
-  return [`Wordstake ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines].join("\n");
+  const gameDay = Math.floor(Date.parse(todayUTCString() + "T00:00:00Z") / 86400000);
+  return [`Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines, "Can you beat me?", "https://word-stake.com"].join("\n");
 }
 function handleKey(key) {
   if (key === "ENTER") return submitGuess();
   if (key === "BACK") return deleteLetter();
   if (/^[A-Z]$/.test(key)) return addLetter(key);
 }
+const mobileGuessInput = document.getElementById("mobile-guess-input");
+const mobileKeyboardQuery = matchMedia("(max-width: 768px) and (pointer: coarse)");
+const MOBILE_INPUT_SENTINEL = " ";
+let lastMobileDeleteAt = 0;
+function usesNativeKeyboard() { return mobileKeyboardQuery.matches; }
+function resetMobileInput() {
+  mobileGuessInput.value = MOBILE_INPUT_SENTINEL;
+  try { mobileGuessInput.setSelectionRange(MOBILE_INPUT_SENTINEL.length, MOBILE_INPUT_SENTINEL.length); } catch {}
+}
+function mobileDeleteOnce() {
+  const now = performance.now();
+  if (now - lastMobileDeleteAt < 100) return;
+  lastMobileDeleteAt = now;
+  deleteLetter();
+}
+function focusMobileKeyboard() {
+  if (!usesNativeKeyboard() || state.gameOver || !document.getElementById("modal-backdrop").classList.contains("hidden")) return;
+  resetMobileInput();
+  mobileGuessInput.focus({ preventScroll: true });
+  resetMobileInput();
+}
+mobileGuessInput.addEventListener("input", () => {
+  const raw = mobileGuessInput.value;
+  if (raw === "") mobileDeleteOnce();
+  const letters = raw.toUpperCase().replace(/[^A-Z]/g, "");
+  resetMobileInput();
+  for (const letter of letters) addLetter(letter);
+});
+mobileGuessInput.addEventListener("beforeinput", event => {
+  if (event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward") {
+    event.preventDefault();
+    mobileDeleteOnce();
+    resetMobileInput();
+  }
+});
+mobileGuessInput.addEventListener("keydown", event => {
+  event.stopPropagation();
+  if (event.key === "Backspace" || event.key === "Delete") {
+    event.preventDefault();
+    mobileDeleteOnce();
+    resetMobileInput();
+    return;
+  }
+  if (event.key === "Enter") {
+    event.preventDefault();
+    submitGuess();
+  }
+});
 document.addEventListener("keydown", (e) => {
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
   const k = e.key.toUpperCase();
   if (k === "ENTER") return handleKey("ENTER");
   if (k === "BACKSPACE") return handleKey("BACK");
@@ -560,24 +870,42 @@ document.addEventListener("click", (e) => { const btn = e.target.closest("button
 document.getElementById("btn-copy-result").addEventListener("click", async () => {
   const text = buildShareText();
   try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
-  catch { showToast("Copy failed — select manually"); }
+  catch { showToast("Copy failed. Try again."); }
 });
-const modals = { signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats") };
+document.getElementById("btn-share").addEventListener("click", async () => {
+  const text = buildShareText();
+  if (navigator.share) {
+    try { await navigator.share({ title: "Wordstake", text }); return; }
+    catch (error) { if (error.name === "AbortError") return; }
+  }
+  try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
+  catch { showToast("Sharing isn't available here"); }
+});
+const modals = { help: document.getElementById("modal-help"), settings: document.getElementById("modal-settings"), signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
-function openModal(name) { backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
+function openModal(name) { mobileGuessInput.blur(); backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
 function closeModals() { backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
 document.getElementById("btn-signin").addEventListener("click", () => { setSigninMode("signin"); openModal("signin"); });
+document.getElementById("btn-help").addEventListener("click", () => openModal("help"));
+document.getElementById("btn-settings").addEventListener("click", () => openModal("settings"));
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
 document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
 backdrop.addEventListener("click", closeModals);
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
 async function startNewGame() {
   const target = await fetchDailyWord();
-  state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), hintsUsed: 0, hintedLetters: {} };
+  state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
+  setEasyMode(easyMode);
+  if (usesNativeKeyboard()) setTimeout(focusMobileKeyboard, 250);
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
   const existing = await fetchTodaysCompletedGame();
   if (existing) replayCompletedGame(existing);
+  const referral = new URLSearchParams(location.search).get("ref");
+  if (referral && !authUser) {
+    document.getElementById("signin-referral").value = referral.toUpperCase();
+    setSigninMode("signup"); openModal("signin");
+  }
 }
 function replayCompletedGame(gameRow) {
   const guesses = Array.isArray(gameRow.guesses) ? gameRow.guesses : [];
@@ -598,10 +926,11 @@ function replayCompletedGame(gameRow) {
   state.won = gameRow.won;
   state.row = guesses.length;
   state.hintsUsed = gameRow.hints_used || 0;
-  updateHintUI();
-  showToast(state.hintsUsed ? `You already played today's word (used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}) — come back tomorrow!` : "You already played today's word — come back tomorrow!");
+  updateHintUI(); updateGuessCounter();
+  showToast(state.hintsUsed ? `You played today and used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}. Come back tomorrow!` : "You already played today. Come back tomorrow!");
   showPostGame(gameRow.won);
 }
+setTheme(document.documentElement.dataset.theme || "dark");
 checkSession().then(startNewGame);
 </script>
 </body>

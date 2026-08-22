@@ -1,21 +1,21 @@
 :root {
   color-scheme: dark;
-  --page: #212121;
-  --page-glow: rgba(16, 163, 127, .08);
-  --surface: #2f2f2f;
-  --surface-strong: #363636;
-  --border: #454545;
-  --text: #ececec;
+  --page: #22211f;
+  --page-glow: rgba(117, 147, 197, .10);
+  --surface: #302f2c;
+  --surface-strong: #3a3834;
+  --border: #4d4a45;
+  --text: #f5f0e7;
 }
 
 html[data-theme="light"] {
   color-scheme: light;
-  --page: #f7f7f8;
-  --page-glow: rgba(16, 163, 127, .07);
-  --surface: #ffffff;
-  --surface-strong: #f0f0f0;
-  --border: #d9d9df;
-  --text: #2f2f2f;
+  --page: #f7f3ea;
+  --page-glow: rgba(136, 158, 205, .14);
+  --surface: #fffdf8;
+  --surface-strong: #f0ebe1;
+  --border: #dcd5c8;
+  --text: #292723;
 }
 html[data-theme="light"] body.bg-slate-950 { background-color: var(--page) !important; }
 
@@ -222,4 +222,277 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
 @media (max-width: 360px) {
   main > div:first-child { flex-wrap: wrap; row-gap: .35rem; }
   main > div:first-child > span:last-child { width: 100%; justify-content: flex-end; }
+}
+
+/* Playful editorial preview */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+body {
+  position: relative;
+  background-image: none !important;
+}
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(1px);
+}
+body::before {
+  width: 260px;
+  height: 260px;
+  top: 18%;
+  left: calc(50% - 290px);
+  background: rgba(189, 176, 218, .16);
+}
+body::after {
+  width: 190px;
+  height: 190px;
+  right: calc(50% - 265px);
+  bottom: 13%;
+  background: rgba(239, 172, 136, .12);
+}
+header, main, footer { position: relative; z-index: 1; }
+header {
+  background: color-mix(in srgb, var(--page) 94%, transparent) !important;
+  backdrop-filter: blur(16px) !important;
+}
+header > div { max-width: 520px !important; }
+.wordmark {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.035em !important;
+  color: var(--text) !important;
+}
+header > div > div:first-child > div:first-child {
+  background: #6fa77b !important;
+  color: #16271b !important;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 8px rgba(64, 105, 74, .18) !important;
+}
+#btn-leaderboard { display: none !important; }
+header nav > button:not(#btn-signin) {
+  color: color-mix(in srgb, var(--text) 62%, transparent) !important;
+}
+header nav > button:not(#btn-signin):hover {
+  color: var(--text) !important;
+  background: color-mix(in srgb, var(--text) 7%, transparent) !important;
+  transform: translateY(-1px);
+}
+#btn-signin,
+#btn-account {
+  background: color-mix(in srgb, var(--surface) 86%, var(--page)) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 2px 7px rgba(48, 43, 35, .07) !important;
+}
+.game-main {
+  max-width: 480px !important;
+  position: relative;
+  gap: 16px !important;
+  padding-top: 22px !important;
+  padding-bottom: 22px !important;
+}
+.game-tower { max-width: 400px; }
+.game-tools {
+  position: absolute;
+  top: 20px;
+  right: 38px;
+  z-index: 3;
+  width: auto !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+#btn-hint {
+  width: 34px;
+  height: 34px;
+  justify-content: center;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border-color: rgba(188, 137, 32, .25) !important;
+  background: rgba(231, 180, 70, .12) !important;
+  color: #a56d13 !important;
+  font-size: 14px !important;
+  box-shadow: 0 3px 10px rgba(123, 86, 23, .08);
+}
+#btn-hint #hint-label { display: none; }
+#btn-hint:not(:disabled) { animation: hint-breathe 2.8s ease-in-out infinite; }
+.board-stage { gap: 10px !important; }
+#grid, #sidebar { gap: 7px !important; }
+#grid > div { gap: 7px !important; }
+#grid > div > div {
+  width: 46px !important;
+  height: 46px !important;
+  border-width: 1px !important;
+  border-radius: 14px !important;
+  border-color: color-mix(in srgb, var(--text) 13%, transparent) !important;
+  background: color-mix(in srgb, var(--surface) 78%, var(--page)) !important;
+  color: var(--text) !important;
+  font-size: 23px !important;
+  font-weight: 750 !important;
+  box-shadow: 0 3px 9px rgba(58, 50, 38, .055) !important;
+  transform-style: preserve-3d;
+}
+#grid > div > div.bg-slate-800 {
+  background: color-mix(in srgb, var(--surface-strong) 84%, var(--page)) !important;
+  border-color: transparent !important;
+}
+#grid > div > div.bg-brand-500 {
+  background: #6fa77b !important;
+  border-color: transparent !important;
+  color: #122217 !important;
+}
+#grid > div > div.bg-yellow-400 {
+  background: #d8a640 !important;
+  border-color: transparent !important;
+  color: #2c210d !important;
+}
+#sidebar > div {
+  min-width: 46px !important;
+  height: 46px !important;
+  padding: 0 2px !important;
+  gap: 5px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 12px !important;
+}
+#sidebar > div > span > span { width: 5px !important; height: 5px !important; }
+#keyboard {
+  max-width: 400px !important;
+  gap: 7px !important;
+}
+#keyboard > div { gap: 6px !important; }
+#keyboard button {
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--surface-strong) 82%, var(--page)) !important;
+  color: var(--text) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--border) 84%, transparent), 0 5px 10px rgba(49, 43, 34, .06) !important;
+  transform: translateY(0);
+  transition: transform 90ms ease, box-shadow 90ms ease, background-color 180ms ease, color 180ms ease !important;
+}
+#keyboard button:hover { transform: translateY(-1px); }
+#keyboard button:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border) 90%, transparent) !important;
+}
+#keyboard button.bg-brand-500 { background: #6fa77b !important; color: #122217 !important; }
+#keyboard button.bg-yellow-400 { background: #d8a640 !important; color: #2c210d !important; }
+#keyboard button.bg-slate-900 { background: #cbc7bf !important; color: #77736c !important; }
+#post-game {
+  max-width: 400px !important;
+  padding: 12px 4px 4px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+#post-game-message {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 29px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.035em !important;
+  color: var(--text) !important;
+}
+#post-game-word { color: color-mix(in srgb, var(--text) 58%, transparent) !important; }
+#post-game > div {
+  max-width: 290px;
+  margin-top: 12px !important;
+}
+#btn-share,
+#btn-copy-result {
+  border-radius: 14px !important;
+  padding: 11px 16px !important;
+  box-shadow: 0 3px 9px rgba(49, 43, 34, .07);
+  transition: transform 120ms ease, box-shadow 120ms ease !important;
+}
+#btn-share { background: #6fa77b !important; color: #122217 !important; }
+#btn-copy-result {
+  background: color-mix(in srgb, var(--surface-strong) 82%, var(--page)) !important;
+  color: var(--text) !important;
+}
+#btn-share:hover, #btn-copy-result:hover { transform: translateY(-1px); }
+#btn-share:active, #btn-copy-result:active { transform: translateY(1px); }
+.postgame-invite {
+  width: auto !important;
+  margin-top: 10px !important;
+  padding: 4px 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--text) 48%, transparent) !important;
+  font-weight: 500 !important;
+}
+.tomorrow-note {
+  margin-top: 5px !important;
+  font-family: Fraunces, Georgia, serif;
+  color: color-mix(in srgb, var(--text) 48%, transparent) !important;
+}
+#account-dropdown,
+[id^="modal-"]:not(#modal-backdrop) > div {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 20px 50px rgba(40, 34, 26, .16) !important;
+}
+footer { display: none !important; }
+.tile-reveal { animation: editorial-flip 300ms cubic-bezier(.2,.75,.25,1) both; animation-delay: var(--reveal-delay, 0ms); }
+.tile-correct-bounce { animation: correct-bounce 300ms cubic-bezier(.2,.9,.3,1.25) both; animation-delay: var(--reveal-delay, 0ms); }
+@keyframes editorial-flip { 0% { transform: rotateX(0); } 48% { transform: rotateX(68deg); } 100% { transform: rotateX(0); } }
+@keyframes correct-bounce { 0%,100% { transform: translateY(0); } 55% { transform: translateY(-4px); } }
+@keyframes hint-breathe { 0%,88%,100% { transform: scale(1); } 93% { transform: scale(1.06); } }
+#account-streak:not(:empty) { display: inline-block; animation: flame-flicker 3.8s ease-in-out infinite; }
+@keyframes flame-flicker { 0%,92%,100% { transform: rotate(0) scale(1); } 95% { transform: rotate(-5deg) scale(1.08); } 98% { transform: rotate(4deg) scale(1.03); } }
+.celebration-sprinkles { position: fixed; z-index: 65; left: 50%; top: 45%; width: 1px; height: 1px; pointer-events: none; }
+.celebration-sprinkles i {
+  --angle: calc(var(--i) * 30deg);
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: hsl(calc(18 + var(--i) * 31) 48% 62%);
+  animation: sprinkle-pop 720ms ease-out both;
+}
+@keyframes sprinkle-pop {
+  from { opacity: .95; transform: rotate(var(--angle)) translateX(8px) scale(.5); }
+  to { opacity: 0; transform: rotate(var(--angle)) translateX(92px) scale(1); }
+}
+
+@media (max-width: 480px) {
+  body::before { width: 170px; height: 170px; left: -70px; top: 22%; }
+  body::after { width: 140px; height: 140px; right: -55px; bottom: 20%; }
+  .game-main { gap: 16px !important; padding-top: 20px !important; }
+  .game-tools { top: 14px; right: 18px; }
+  #grid, #sidebar, #grid > div { gap: 6px !important; }
+  #grid > div > div {
+    width: clamp(36px, 11.3vw, 45px) !important;
+    height: clamp(36px, 11.2vw, 45px) !important;
+    border-radius: 12px !important;
+    font-size: 20px !important;
+  }
+  #sidebar > div {
+    min-width: 43px !important;
+    height: clamp(36px, 11.2vw, 45px) !important;
+  }
+  #post-game { padding-top: 8px !important; }
+  #post-game-message { font-size: 25px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-sprinkles { display: none; }
 }

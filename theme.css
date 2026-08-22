@@ -32,6 +32,23 @@ header {
   background: color-mix(in srgb, var(--page) 88%, transparent) !important;
   border-color: var(--border) !important;
 }
+header > div { min-width: 0; }
+header nav {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+#account-menu-wrap {
+  position: static !important;
+  flex: 0 0 auto;
+}
+#account-dropdown {
+  position: fixed !important;
+  top: 58px !important;
+  right: max(12px, calc((100vw - 42rem) / 2)) !important;
+  width: 180px !important;
+  min-width: 180px;
+  z-index: 60 !important;
+}
 #post-game,
 #account-dropdown,
 [id^="modal-"]:not(#modal-backdrop) > div {
@@ -120,6 +137,10 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
   #btn-signin { margin-left: .25rem; padding: .45rem .75rem; }
   #btn-signin, #guess-counter, #btn-hint { white-space: nowrap; flex-shrink: 0; }
   #account-menu-wrap { margin-left: .25rem; }
+  #account-dropdown {
+    top: 48px !important;
+    right: 12px !important;
+  }
   #btn-account { gap: .35rem; padding: .35rem .45rem .35rem .65rem; }
   #account-username { max-width: 72px; }
   main { gap: 1.15rem !important; padding: 1.25rem .75rem !important; }

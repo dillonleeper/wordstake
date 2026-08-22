@@ -475,6 +475,10 @@ footer { display: none !important; }
 
 /* Scale the game for desktop displays without changing the mobile layout. */
 @media (min-width: 769px) {
+  :root {
+    --desktop-tile: clamp(46px, 4.4vh, 64px);
+    --desktop-grid-gap: clamp(7px, .65vh, 9px);
+  }
   header > div {
     max-width: 680px !important;
     padding-top: 18px !important;
@@ -489,19 +493,24 @@ footer { display: none !important; }
   .game-tower { max-width: 540px !important; }
   .game-tools {
     top: clamp(22px, 2.8vh, 38px);
-    right: 60px;
+    left: calc(50% - clamp(129px, 12.3vh, 177px) - 54px);
+    right: auto;
   }
   #btn-hint {
     width: clamp(36px, 3.2vw, 42px) !important;
     height: clamp(36px, 3.2vw, 42px) !important;
     font-size: 16px !important;
   }
-  .board-stage { gap: 12px !important; }
-  #grid, #sidebar { gap: clamp(7px, .65vh, 9px) !important; }
-  #grid > div { gap: clamp(7px, .65vh, 9px) !important; }
+  .board-stage {
+    position: relative;
+    max-width: none !important;
+    justify-content: center !important;
+  }
+  #grid, #sidebar { gap: var(--desktop-grid-gap) !important; }
+  #grid > div { gap: var(--desktop-grid-gap) !important; }
   #grid > div > div {
-    width: clamp(46px, 4.4vh, 64px) !important;
-    height: clamp(46px, 4.4vh, 64px) !important;
+    width: var(--desktop-tile) !important;
+    height: var(--desktop-tile) !important;
     border-radius: clamp(13px, 1.1vh, 16px) !important;
     font-size: clamp(22px, 2.1vh, 28px) !important;
   }
@@ -510,6 +519,20 @@ footer { display: none !important; }
     height: clamp(46px, 4.4vh, 64px) !important;
     font-size: clamp(12px, 1.05vh, 14px) !important;
   }
+  #sidebar {
+    position: absolute;
+    top: 0;
+    left: calc(50% + clamp(129px, 12.3vh, 177px) + 12px);
+    z-index: 2;
+  }
+  #btn-account {
+    gap: 6px !important;
+    padding: 5px 8px 5px 10px !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+  }
+  #account-username { max-width: 88px !important; }
+  #account-streak { font-size: 11px !important; }
   #keyboard {
     max-width: 520px !important;
     gap: clamp(7px, .7vh, 10px) !important;

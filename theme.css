@@ -308,14 +308,20 @@ header nav > button:not(#btn-signin):hover {
 .game-mode-switch {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 176px;
+  height: 36px;
+  box-sizing: border-box;
   padding: 3px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: color-mix(in srgb, var(--surface-strong) 68%, var(--page));
 }
 .game-mode-button {
-  min-width: 76px;
-  padding: 6px 13px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 28px;
+  padding: 0 12px;
   border-radius: 999px;
   color: color-mix(in srgb, var(--text) 58%, transparent);
   font-size: 12px;
@@ -454,6 +460,56 @@ header nav > button:not(#btn-signin):hover {
   color: #122217;
   border-radius: 14px !important;
 }
+
+/* Stable switches that do not depend on utility-class transforms. */
+.setting-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 12%, var(--surface-strong));
+  transition: background-color 160ms ease;
+}
+.setting-toggle[aria-checked="true"] { background: #20b85a !important; }
+.setting-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .14);
+  transform: translateX(0) !important;
+  transition: transform 160ms ease;
+}
+.setting-toggle[aria-checked="true"] .setting-toggle-knob { transform: translateX(20px) !important; }
+
+/* Hint is deliberately plain and placed after the game controls. */
+.game-tools { display: none !important; }
+.hint-text-button {
+  min-width: 132px;
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid color-mix(in srgb, #b98524 34%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #e7b446 10%, var(--page));
+  color: #9a6815;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none;
+}
+.hint-text-button:hover:not(:disabled) { background: color-mix(in srgb, #e7b446 18%, var(--page)); }
+.hint-text-button:disabled { opacity: .58; cursor: default; }
+
+#btn-mobile-menu,
+#mobile-menu { display: none; }
 #btn-copy-result {
   background: color-mix(in srgb, var(--surface-strong) 82%, var(--page)) !important;
   color: var(--text) !important;
@@ -619,6 +675,90 @@ footer { display: none !important; }
   .mobile-input-help { margin-top: 2px !important; }
   #post-game { padding-top: 8px !important; }
   #post-game-message { font-size: 25px !important; }
+}
+
+/* Thumb-friendly phone navigation. How to Play stays visible. */
+@media (max-width: 600px) {
+  header > div:first-child { padding: 12px 16px !important; }
+  header nav { gap: 5px; }
+  #btn-help,
+  #btn-mobile-menu {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0 !important;
+    place-items: center;
+    border-radius: 12px;
+    color: color-mix(in srgb, var(--text) 68%, transparent);
+  }
+  #btn-help svg { width: 23px; height: 23px; }
+  #btn-mobile-menu svg { width: 24px; height: 24px; }
+  #btn-stats,
+  #btn-settings,
+  #btn-signin,
+  #account-menu-wrap { display: none !important; }
+  #mobile-menu:not([hidden]) {
+    position: fixed;
+    top: 66px;
+    right: 12px;
+    z-index: 65;
+    display: block;
+    width: min(292px, calc(100vw - 24px));
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--surface) 97%, transparent);
+    box-shadow: 0 12px 30px rgba(42, 37, 30, .14);
+  }
+  #mobile-menu [hidden] { display: none !important; }
+  #mobile-menu button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 50px;
+    padding: 0 15px;
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 650;
+    text-align: left;
+  }
+  #mobile-menu button:active { background: color-mix(in srgb, var(--text) 8%, transparent); }
+  #mobile-menu .mobile-menu-danger { color: #d65353; }
+  .mobile-menu-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 2px 4px 6px;
+    padding: 10px 11px 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  #mobile-account-name { color: var(--text); font-size: 15px; font-weight: 750; }
+  #mobile-account-streak { color: color-mix(in srgb, var(--text) 55%, transparent); font-size: 12px; }
+  .hint-text-button { min-width: 150px; min-height: 44px; margin-top: 2px; }
+}
+
+/* Final hint override wins over the former floating-circle rules. */
+#btn-hint.hint-text-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  height: 40px !important;
+  min-width: 132px;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  border-color: color-mix(in srgb, #b98524 34%, transparent) !important;
+  background: color-mix(in srgb, #e7b446 10%, var(--page)) !important;
+  color: #9a6815 !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+#btn-hint.hint-text-button #hint-label { display: inline !important; }
+@media (max-width: 600px) {
+  #btn-hint.hint-text-button { height: 44px !important; min-width: 150px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

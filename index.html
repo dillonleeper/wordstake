@@ -59,6 +59,7 @@
 </div>
 <nav class="flex items-center gap-1">
 <button id="btn-help" type="button" title="How to play" aria-label="How to play" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-.9.5-1.4 1-1.4 2.1M12 17h.01"/></svg></button>
+<button id="btn-mobile-menu" type="button" title="Menu" aria-label="Open menu" aria-haspopup="menu" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button id="btn-stats" title="Stats" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>
 <button id="btn-leaderboard" title="Leaderboard" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg></button>
 <button id="btn-settings" type="button" title="Settings" aria-label="Settings" class="rounded-full p-2.5 text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.38.36.72.66 1 .3.28.68.42 1.1.4H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/></svg></button>
@@ -74,6 +75,17 @@
 </div>
 </nav>
 </div>
+<div id="mobile-menu" hidden role="menu" aria-label="Wordstake menu">
+<div id="mobile-account-summary" hidden class="mobile-menu-summary"><span id="mobile-account-name"></span><span id="mobile-account-streak"></span></div>
+<button id="mobile-btn-stats" role="menuitem">Your Stats</button>
+<button id="mobile-btn-settings" role="menuitem">Settings</button>
+<button id="mobile-btn-signin" role="menuitem">Sign In</button>
+<div id="mobile-account-actions" hidden>
+<button id="mobile-btn-profile" role="menuitem">Edit Profile</button>
+<button id="mobile-btn-refer" role="menuitem">Refer a Friend</button>
+<button id="mobile-btn-signout" role="menuitem" class="mobile-menu-danger">Sign Out</button>
+</div>
+</div>
 </header>
 <div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
 <main class="game-main mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
@@ -83,7 +95,6 @@
 </div>
 <div class="game-tower game-tools flex w-full items-center justify-end">
 <span id="guess-counter" class="sr-only">Guess 1 of 8</span>
-<button id="btn-hint" type="button" title="Show one letter. It counts as a hint." aria-label="Use a hint" class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
 </div>
 <div class="game-tower board-stage flex w-full items-start justify-center gap-3 sm:gap-4">
 <div id="grid" class="grid grid-rows-8 gap-2"></div>
@@ -92,6 +103,7 @@
 <div id="keyboard" class="game-tower mt-1 flex w-full flex-col items-center gap-2"></div>
 <input id="mobile-guess-input" class="mobile-guess-input" type="text" inputmode="text" enterkeyhint="done" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Type your guess" />
 <p id="mobile-input-help" class="mobile-input-help text-center text-[11px] leading-snug text-slate-500">Tap the grid to type. Tap submitted tiles to mark them.</p>
+<button id="btn-hint" type="button" title="Reveal one letter" aria-label="Use a hint" class="hint-text-button"><span id="hint-label">Hint (3 left)</span></button>
 <div id="post-game" class="game-tower hidden w-full flex-col items-center gap-1.5 rounded-3xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl animate-rise">
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
@@ -129,8 +141,8 @@
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-3 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">Settings</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
 <div class="divide-y divide-white/10">
-<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Easy Mode</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Shows which letters are exact or present.</p></div><button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" aria-label="Easy Mode" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-slate-700 transition-colors duration-200"><span id="easy-mode-knob" class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
-<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Dark Theme</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Use the darker screen colors.</p></div><button id="dark-theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark Theme" class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-brand-500 transition-colors duration-200"><span id="dark-theme-knob" class="inline-block h-5 w-5 translate-x-5 rounded-full bg-white shadow-sm transition-transform duration-200"></span></button></div>
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Easy Mode</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Shows which letters are exact or present.</p></div><button id="easy-mode-toggle" type="button" role="switch" aria-checked="false" aria-label="Easy Mode" class="setting-toggle"><span id="easy-mode-knob" class="setting-toggle-knob"></span></button></div>
+<div class="flex items-center justify-between gap-5 py-4"><div><p class="text-[14px] font-semibold text-slate-100">Dark Theme</p><p class="mt-1 text-[11px] leading-snug text-slate-500">Use the darker screen colors.</p></div><button id="dark-theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Dark Theme" class="setting-toggle"><span id="dark-theme-knob" class="setting-toggle-knob"></span></button></div>
 </div>
 <p class="pt-3 text-center text-[11px] text-slate-600">Hard Mode is the default Wordstake experience.</p>
 </div></div>
@@ -605,10 +617,17 @@ function renderStats() {
 function renderAuthUI() {
   const signinBtn = document.getElementById("btn-signin");
   const accountWrap = document.getElementById("account-menu-wrap");
+  const mobileSignin = document.getElementById("mobile-btn-signin");
+  const mobileSummary = document.getElementById("mobile-account-summary");
+  const mobileActions = document.getElementById("mobile-account-actions");
   if (authUser) {
     signinBtn.hidden = true; accountWrap.hidden = false;
-    document.getElementById("account-username").textContent = authProfile ? authProfile.username : authUser.email;
+    const displayName = authProfile ? authProfile.username : authUser.email;
+    document.getElementById("account-username").textContent = displayName;
     document.getElementById("account-streak").textContent = authStats && authStats.current_streak ? `🔥${authStats.current_streak}` : "";
+    document.getElementById("mobile-account-name").textContent = displayName;
+    document.getElementById("mobile-account-streak").textContent = authStats && authStats.current_streak ? `🔥 ${authStats.current_streak} day streak` : "";
+    mobileSignin.hidden = true; mobileSummary.hidden = false; mobileActions.hidden = false;
     const bonus = Number(authProfile?.bonus_hints || 0);
     document.getElementById("account-bonus-badge").hidden = bonus < 1;
     document.getElementById("account-referral-bonus").hidden = bonus < 1;
@@ -620,7 +639,11 @@ function renderAuthUI() {
         setTimeout(() => showToast(`🎁 Referral bonus unlocked: +${bonus} hint${bonus === 1 ? "" : "s"} every game`), 350);
       }
     }
-  } else { signinBtn.hidden = false; accountWrap.hidden = true; closeAccountMenu(); }
+  } else {
+    signinBtn.hidden = false; accountWrap.hidden = true;
+    mobileSignin.hidden = false; mobileSummary.hidden = true; mobileActions.hidden = true;
+    closeAccountMenu();
+  }
   updateHintUI();
 }
 let signinMode = "signin";
@@ -748,6 +771,30 @@ document.getElementById("btn-refer-friend").addEventListener("click", () => {
 });
 document.getElementById("account-referral-bonus").addEventListener("click", () => {
   closeAccountMenu(); showReferralModal();
+});
+function closeMobileMenu() {
+  const menu = document.getElementById("mobile-menu");
+  const button = document.getElementById("btn-mobile-menu");
+  menu.hidden = true;
+  button.setAttribute("aria-expanded", "false");
+}
+document.getElementById("btn-mobile-menu").addEventListener("click", (event) => {
+  event.stopPropagation();
+  const menu = document.getElementById("mobile-menu");
+  menu.hidden = !menu.hidden;
+  event.currentTarget.setAttribute("aria-expanded", String(!menu.hidden));
+});
+document.getElementById("mobile-menu").addEventListener("click", event => event.stopPropagation());
+document.addEventListener("click", closeMobileMenu);
+document.getElementById("mobile-btn-stats").addEventListener("click", () => { closeMobileMenu(); renderStats(); openModal("stats"); });
+document.getElementById("mobile-btn-settings").addEventListener("click", () => { closeMobileMenu(); openModal("settings"); });
+document.getElementById("mobile-btn-signin").addEventListener("click", () => { closeMobileMenu(); setSigninMode("signin"); openModal("signin"); });
+document.getElementById("mobile-btn-profile").addEventListener("click", () => { closeMobileMenu(); document.getElementById("profile-username").value = authProfile?.username || ""; openModal("profile"); });
+document.getElementById("mobile-btn-refer").addEventListener("click", () => { closeMobileMenu(); showReferralModal(); });
+document.getElementById("mobile-btn-signout").addEventListener("click", async () => {
+  closeMobileMenu();
+  const { error } = await sbClient.auth.signOut();
+  if (!error) { authUser = null; authProfile = null; authStats = null; renderAuthUI(); showToast("Signed out"); }
 });
 function showReferralModal() {
   document.getElementById("referral-code").textContent = authProfile?.referral_code || "Unavailable";

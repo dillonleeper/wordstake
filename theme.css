@@ -305,6 +305,29 @@ header nav > button:not(#btn-signin):hover {
   padding-top: 22px !important;
   padding-bottom: 22px !important;
 }
+.game-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 68%, var(--page));
+}
+.game-mode-button {
+  min-width: 76px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--text) 58%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+.game-mode-button[aria-pressed="true"] {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 4px rgba(49, 43, 34, .08);
+}
 .game-tower { max-width: 400px; }
 .game-tools {
   position: absolute;
@@ -424,6 +447,13 @@ header nav > button:not(#btn-signin):hover {
   transition: transform 120ms ease, box-shadow 120ms ease !important;
 }
 #btn-share { background: #6fa77b !important; color: #122217 !important; }
+.practice-next {
+  max-width: 290px;
+  margin-top: 10px;
+  background: #6fa77b;
+  color: #122217;
+  border-radius: 14px !important;
+}
 #btn-copy-result {
   background: color-mix(in srgb, var(--surface-strong) 82%, var(--page)) !important;
   color: var(--text) !important;

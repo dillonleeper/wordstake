@@ -77,6 +77,10 @@
 </header>
 <div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
 <main class="game-main mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
+<div class="game-mode-switch" role="group" aria-label="Game mode">
+<button id="btn-mode-daily" class="game-mode-button" type="button" aria-pressed="true">Daily</button>
+<button id="btn-mode-practice" class="game-mode-button" type="button" aria-pressed="false">Practice</button>
+</div>
 <div class="game-tower game-tools flex w-full items-center justify-end">
 <span id="guess-counter" class="sr-only">Guess 1 of 8</span>
 <button id="btn-hint" type="button" title="Show one letter. It counts as a hint." aria-label="Use a hint" class="flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-2.5 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-400/20 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-yellow-400/10">💡 <span id="hint-label">Hint (3 left)</span></button>
@@ -95,8 +99,9 @@
 <button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Share Result</button>
 <button id="btn-copy-result" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Copy</button>
 </div>
+<button id="btn-next-practice" class="practice-next hidden w-full rounded-full px-4 py-2.5 text-[13px] font-semibold">Next Word</button>
 <button id="btn-postgame-invite" class="postgame-invite mt-2 w-full rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2.5 text-[12px] font-semibold text-yellow-300 transition hover:bg-yellow-400/15">Invite a friend</button>
-<p class="tomorrow-note mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow</p>
+<p id="post-game-note" class="tomorrow-note mt-3 text-center text-[12px] font-medium text-slate-500">Come back tomorrow</p>
 </div>
 </main>
 <footer class="mx-auto mt-2 flex max-w-2xl flex-col items-center gap-1 px-5 py-8 text-center text-[12px] text-slate-600">
@@ -113,6 +118,7 @@
 <div class="mb-5 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">How to Play</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
 <div class="space-y-5 text-[13px] leading-relaxed text-slate-400">
 <section><h3 class="mb-1 font-semibold text-slate-100">Find the five-letter word</h3><p>You get 8 guesses. Each guess must be a real five-letter word.</p></section>
+<section><h3 class="mb-1 font-semibold text-slate-100">Daily or Practice</h3><p>Daily gives everyone the same word once a day. Practice lets you play as many words as you want and does not change your streak or stats.</p></section>
 <section><h3 class="mb-2 font-semibold text-slate-100">Read the two numbers</h3><div class="space-y-2"><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400"></span><span><strong class="text-slate-200">Exact</strong> means a letter is correct and in the right spot.</span></p><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400"></span><span><strong class="text-slate-200">Present</strong> means a correct letter is in the wrong spot.</span></p></div></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">The challenge</h3><p>Wordstake does not tell you which letters matched. Use the totals to narrow down the answer.</p></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">Mark your clues</h3><p>Tap a submitted tile once for yellow, again for green, and once more for gray. These marks are your private notes.</p></section>
@@ -247,6 +253,28 @@ function fallbackWordForDate(dateStr) {
 }
 let state = { target: "", targetLetters: [], row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
 let sessionStats = { played: 0, wins: 0, streak: 0, maxStreak: 0, hintsUsed: 0 };
+let gameMode = "daily";
+let lastPracticeTarget = "";
+let referralLandingHandled = false;
+function randomPracticeWord() {
+  if (!ANSWER_WORDS.length) return "STARE";
+  if (ANSWER_WORDS.length === 1) return ANSWER_WORDS[0];
+  let next = lastPracticeTarget;
+  while (next === lastPracticeTarget) {
+    const values = new Uint32Array(1);
+    if (globalThis.crypto?.getRandomValues) crypto.getRandomValues(values);
+    else values[0] = Math.floor(Math.random() * 4294967296);
+    next = ANSWER_WORDS[values[0] % ANSWER_WORDS.length];
+  }
+  lastPracticeTarget = next;
+  return next;
+}
+function renderGameMode() {
+  const daily = document.getElementById("btn-mode-daily");
+  const practice = document.getElementById("btn-mode-practice");
+  daily.setAttribute("aria-pressed", String(gameMode === "daily"));
+  practice.setAttribute("aria-pressed", String(gameMode === "practice"));
+}
 function scoreGuess(guessArr, targetArr) {
   const target = targetArr.slice(), guess = guessArr.slice();
   const letterResult = Array(WORD_LENGTH).fill("absent");
@@ -364,11 +392,15 @@ async function submitGuess() {
 function endGame(won) {
   state.gameOver = true; state.won = won;
   updateHintUI(); updateGuessCounter();
-  sessionStats.played++;
-  sessionStats.hintsUsed += state.hintsUsed;
-  if (won) { sessionStats.wins++; sessionStats.streak++; sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak); } else { sessionStats.streak = 0; }
-  renderStats();
-  submitGameResult({ word: state.target, solved: won, guessesTaken: state.guesses.length, hintsUsed: state.hintsUsed });
+  if (gameMode === "daily") {
+    sessionStats.played++;
+    sessionStats.hintsUsed += state.hintsUsed;
+    if (won) { sessionStats.wins++; sessionStats.streak++; sessionStats.maxStreak = Math.max(sessionStats.maxStreak, sessionStats.streak); } else { sessionStats.streak = 0; }
+    renderStats();
+    submitGameResult({ word: state.target, solved: won, guessesTaken: state.guesses.length, hintsUsed: state.hintsUsed });
+  } else if (typeof gtag === "function") {
+    gtag("event", "practice_round_complete", { solved: won, guesses: state.guesses.length, hints_used: state.hintsUsed });
+  }
   showPostGame(won);
   if (won) celebrateWin();
 }
@@ -790,8 +822,11 @@ function showPostGame(won) {
   const panel = document.getElementById("post-game");
   const msg = document.getElementById("post-game-message");
   const wordEl = document.getElementById("post-game-word");
-  msg.textContent = won ? `Nice one. ${state.guesses.length} / ${MAX_GUESSES}` : "Tomorrow is another word.";
+  const practice = gameMode === "practice";
+  msg.textContent = won ? `Nice one. ${state.guesses.length} / ${MAX_GUESSES}` : (practice ? "Good try. Ready for another?" : "Tomorrow is another word.");
   wordEl.textContent = state.hintsUsed ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)` : `The word was ${state.target}.`;
+  document.getElementById("btn-next-practice").classList.toggle("hidden", !practice);
+  document.getElementById("post-game-note").textContent = practice ? "Practice as long as you like." : "Come back tomorrow";
   panel.classList.remove("hidden");
   panel.classList.add("flex");
 }
@@ -812,7 +847,10 @@ function buildShareText() {
   const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) + "⬛".repeat(WORD_LENGTH - g.exact - g.present));
   const hintNote = state.hintsUsed ? ` (${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""})` : "";
   const gameDay = Math.floor(Date.parse(todayUTCString() + "T00:00:00Z") / 86400000);
-  return [`Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`, ...lines, "Can you beat me?", "https://word-stake.com"].join("\n");
+  const heading = gameMode === "practice"
+    ? `Wordstake Practice ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`
+    : `Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`;
+  return [heading, ...lines, "Can you beat me?", "https://word-stake.com"].join("\n");
 }
 function handleKey(key) {
   if (key === "ENTER") return submitGuess();
@@ -900,19 +938,26 @@ document.getElementById("btn-leaderboard").addEventListener("click", () => { ope
 document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
 backdrop.addEventListener("click", closeModals);
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
-async function startNewGame() {
-  const target = await fetchDailyWord();
+async function startNewGame(mode = gameMode) {
+  gameMode = mode;
+  renderGameMode();
+  const target = gameMode === "practice" ? randomPracticeWord() : await fetchDailyWord();
   state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
   setEasyMode(easyMode);
   if (usesNativeKeyboard()) setTimeout(focusMobileKeyboard, 250);
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
-  const existing = await fetchTodaysCompletedGame();
-  if (existing) replayCompletedGame(existing);
-  const referral = new URLSearchParams(location.search).get("ref");
-  if (referral && !authUser) {
-    document.getElementById("signin-referral").value = referral.toUpperCase();
-    setSigninMode("signup"); openModal("signin");
+  if (gameMode === "daily") {
+    const existing = await fetchTodaysCompletedGame();
+    if (existing) replayCompletedGame(existing);
+  }
+  if (!referralLandingHandled) {
+    referralLandingHandled = true;
+    const referral = new URLSearchParams(location.search).get("ref");
+    if (referral && !authUser) {
+      document.getElementById("signin-referral").value = referral.toUpperCase();
+      setSigninMode("signup"); openModal("signin");
+    }
   }
 }
 function replayCompletedGame(gameRow) {
@@ -939,6 +984,19 @@ function replayCompletedGame(gameRow) {
   showPostGame(gameRow.won);
 }
 setTheme(document.documentElement.dataset.theme || "dark");
+document.getElementById("btn-mode-daily").addEventListener("click", () => {
+  if (gameMode !== "daily") startNewGame("daily");
+});
+document.getElementById("btn-mode-practice").addEventListener("click", () => {
+  if (gameMode !== "practice") {
+    if (typeof gtag === "function") gtag("event", "select_game_mode", { game_mode: "practice" });
+    startNewGame("practice");
+  }
+});
+document.getElementById("btn-next-practice").addEventListener("click", () => {
+  if (typeof gtag === "function") gtag("event", "practice_next_word");
+  startNewGame("practice");
+});
 checkSession().then(startNewGame);
 </script>
 </body>

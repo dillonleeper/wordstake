@@ -665,12 +665,15 @@ footer { display: none !important; }
   #sidebar {
     position: absolute;
     top: 0;
-    left: calc(50% + min(32.5vw, 127.5px) + 8px);
+    /* Half of the five-tile grid, plus a real gutter. */
+    left: calc(50% + min(32.5vw, 127.5px) + 16px);
     z-index: 2;
   }
   #sidebar > div {
-    min-width: 43px !important;
+    min-width: 39px !important;
     height: clamp(40px, 13vw, 51px) !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
   }
   .mobile-input-help { margin-top: 2px !important; }
   #post-game { padding-top: 8px !important; }

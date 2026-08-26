@@ -985,6 +985,12 @@ document.getElementById("btn-settings").addEventListener("click", () => openModa
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
 document.getElementById("btn-stats").addEventListener("click", () => { renderStats(); openModal("stats"); });
 backdrop.addEventListener("click", closeModals);
+Object.values(modals).forEach(modal => modal.addEventListener("click", event => {
+  if (event.target === modal) closeModals();
+}));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !backdrop.classList.contains("hidden")) closeModals();
+});
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
 async function startNewGame(mode = gameMode) {
   gameMode = mode;
@@ -1045,7 +1051,22 @@ document.getElementById("btn-next-practice").addEventListener("click", () => {
   if (typeof gtag === "function") gtag("event", "practice_next_word");
   startNewGame("practice");
 });
-checkSession().then(startNewGame);
+function maybeShowHelpForNewUser() {
+  if (new URLSearchParams(location.search).has("ref")) return;
+  try {
+    if (localStorage.getItem("wordstake_seen_help") === "1") return;
+    localStorage.setItem("wordstake_seen_help", "1");
+  } catch (error) {
+    // If storage is unavailable, still give the visitor the instructions.
+  }
+  openModal("help");
+}
+async function initializeApp() {
+  await checkSession();
+  await startNewGame();
+  maybeShowHelpForNewUser();
+}
+initializeApp();
 </script>
 </body>
 </html>

@@ -125,17 +125,18 @@
 </p>
 </footer>
 <div id="modal-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-md"></div>
-<div id="modal-help" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-<div class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
-<div class="mb-5 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">How to Play</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
-<div class="space-y-5 text-[13px] leading-relaxed text-slate-400">
+<div id="modal-help" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="help-title">
+<div class="help-card w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="help-header"><h2 id="help-title" class="text-[18px] font-semibold text-slate-50">How to Play</h2><button data-close-modal class="help-close rounded-full text-slate-500 hover:text-slate-200" aria-label="Close instructions">✕</button></div>
+<div class="help-content text-[13px] leading-relaxed text-slate-400">
 <section><h3 class="mb-1 font-semibold text-slate-100">Find the five-letter word</h3><p>You get 8 guesses. Each guess must be a real five-letter word.</p></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">Daily or Practice</h3><p>Daily gives everyone the same word once a day. Practice lets you play as many words as you want and does not change your streak or stats.</p></section>
-<section><h3 class="mb-2 font-semibold text-slate-100">Read the two numbers</h3><div class="space-y-2"><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-400"></span><span><strong class="text-slate-200">Exact</strong> means a letter is correct and in the right spot.</span></p><p class="flex items-start gap-2"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400"></span><span><strong class="text-slate-200">Present</strong> means a correct letter is in the wrong spot.</span></p></div></section>
+<section><h3 class="mb-2 font-semibold text-slate-100">Read the two numbers</h3><div class="help-legend"><p class="help-legend-item"><span class="help-legend-dot help-legend-dot-exact" aria-hidden="true"></span><span><strong class="text-slate-200">Exact</strong> means a letter is correct and in the right spot.</span></p><p class="help-legend-item"><span class="help-legend-dot help-legend-dot-present" aria-hidden="true"></span><span><strong class="text-slate-200">Present</strong> means a correct letter is in the wrong spot.</span></p></div></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">The challenge</h3><p>Wordstake does not tell you which letters matched. Use the totals to narrow down the answer.</p></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">Mark your clues</h3><p>Tap a submitted tile once for yellow, again for green, and once more for gray. These marks are your private notes.</p></section>
 <section><h3 class="mb-1 font-semibold text-slate-100">Need help?</h3><p>Use a hint to reveal one letter. Easy Mode can also show every matching tile. Turn it on in Settings.</p></section>
 </div>
+<button data-close-modal class="help-primary-action">Start playing</button>
 </div></div>
 <div id="modal-settings" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">

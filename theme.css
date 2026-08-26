@@ -61,6 +61,73 @@ header nav {
   background: color-mix(in srgb, var(--surface) 95%, transparent) !important;
   border-color: var(--border) !important;
 }
+
+/* Keep the onboarding instructions stable even when utility classes change. */
+.help-card {
+  display: flex;
+  width: min(calc(100vw - 32px), 440px) !important;
+  max-width: 440px !important;
+  max-height: min(90dvh, 700px);
+  flex-direction: column;
+}
+.help-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.help-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  font-size: 16px;
+}
+.help-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.help-content section + section { margin-top: 1.15rem; }
+.help-legend { display: grid; gap: .65rem; }
+.help-legend-item {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  align-items: start;
+  gap: .65rem;
+}
+.help-legend-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin-top: .3rem;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 16%, transparent);
+}
+.help-legend-dot-exact { color: #6fa77b; background: #6fa77b; }
+.help-legend-dot-present { color: #d8a640; background: #d8a640; }
+.help-primary-action {
+  min-height: 44px;
+  flex: 0 0 auto;
+  margin-top: 1.35rem;
+  border-radius: 999px;
+  background: #6fa77b;
+  color: #122217;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color .15s ease, transform .15s ease;
+}
+.help-primary-action:hover { background: #7bb487; }
+.help-primary-action:active { transform: scale(.985); }
+.help-close:focus-visible,
+.help-primary-action:focus-visible {
+  outline: 2px solid #6fa77b;
+  outline-offset: 2px;
+}
 input {
   background: color-mix(in srgb, var(--surface-strong) 88%, transparent) !important;
   border-color: var(--border) !important;
@@ -187,6 +254,17 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
     border-radius: 22px 22px 0 0 !important;
     padding: 1.25rem !important;
   }
+  #modal-help > .help-card {
+    display: flex;
+    width: 100% !important;
+    max-height: min(92dvh, 680px);
+    overflow: hidden;
+    padding: 1.25rem 1.25rem max(1.25rem, env(safe-area-inset-bottom)) !important;
+  }
+  .help-header { margin-bottom: 1rem; }
+  .help-content { padding-right: .15rem; }
+  .help-content section + section { margin-top: .95rem; }
+  .help-primary-action { margin-top: 1rem; }
 }
 
 @media (max-width: 768px) and (pointer: coarse) {

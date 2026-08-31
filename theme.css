@@ -34,6 +34,7 @@ body {
   color: var(--text) !important;
   transition: background-color .2s ease, color .2s ease;
 }
+body.modal-open { overflow: hidden; }
 header {
   background: color-mix(in srgb, var(--page) 88%, transparent) !important;
   border-color: var(--border) !important;
@@ -348,6 +349,12 @@ html[data-theme="light"] #keyboard .bg-yellow-400 { color: #111 !important; }
   .help-step { padding: .7rem; }
   .help-steps { gap: .65rem; }
   .help-primary-action { margin-top: 1rem; }
+  #modal-postgame > .postgame-modal-card {
+    width: 100% !important;
+    padding: 1.75rem 1.25rem max(1.25rem, env(safe-area-inset-bottom)) !important;
+  }
+  .postgame-modal-result { padding-left: 24px; padding-right: 24px; }
+  #modal-postgame-message { font-size: 25px; }
 }
 
 @media (max-width: 768px) and (pointer: coarse) {
@@ -465,6 +472,37 @@ header nav > button:not(#btn-signin):hover {
   gap: 16px !important;
   padding-top: 22px !important;
   padding-bottom: 22px !important;
+}
+.challenge-banner {
+  display: flex;
+  width: min(100%, 400px);
+  align-items: center;
+  gap: 11px;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--green) 35%, var(--border));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--green) 8%, var(--surface));
+  box-shadow: 0 5px 16px rgba(49, 85, 58, .07);
+  color: var(--text);
+}
+.challenge-banner[hidden] { display: none !important; }
+.challenge-banner-icon {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--green) 18%, var(--surface));
+  font-size: 16px;
+}
+.challenge-banner strong { display: block; font-size: 13px; line-height: 1.25; }
+.challenge-banner p {
+  margin-top: 2px;
+  color: color-mix(in srgb, var(--text) 62%, transparent);
+  font-size: 12px;
+  line-height: 1.35;
 }
 .game-mode-switch {
   display: inline-flex;
@@ -677,23 +715,113 @@ header nav > button:not(#btn-signin):hover {
 }
 #btn-share:hover, #btn-copy-result:hover { transform: translateY(-1px); }
 #btn-share:active, #btn-copy-result:active { transform: translateY(1px); }
-.postgame-account-prompt {
-  width: 100%;
-  margin-top: 12px;
-  padding: 16px;
-  border: 1px solid color-mix(in srgb, #6fa77b 28%, var(--border));
-  border-radius: 18px;
-  background: color-mix(in srgb, #6fa77b 8%, var(--surface));
-  text-align: left;
+.postgame-modal-card {
+  position: relative;
+  width: min(calc(100vw - 32px), 400px) !important;
+  max-width: 400px !important;
+  padding: 30px 28px 24px;
+  text-align: center;
 }
-.postgame-account-eyebrow {
-  display: block;
-  margin-bottom: 5px;
-  color: #5f986c;
+.postgame-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--text) 50%, transparent);
+  font-size: 16px;
+}
+.postgame-modal-result { padding: 10px 28px 0; }
+#modal-postgame-message {
+  color: var(--text);
+  font-family: Fraunces, Georgia, serif;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.12;
+}
+#modal-postgame-word {
+  margin-top: 8px;
+  color: color-mix(in srgb, var(--text) 56%, transparent);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.postgame-comparison {
+  margin-top: 18px;
+  padding: 15px 14px 13px;
+  border: 1px solid color-mix(in srgb, var(--green) 25%, var(--border));
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--green) 6%, var(--surface));
+}
+.postgame-comparison[hidden],
+.postgame-comparison-stats[hidden],
+.postgame-challenge-result[hidden] { display: none !important; }
+.postgame-comparison-kicker {
+  color: #5c9769;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: .08em;
+  line-height: 1;
   text-transform: uppercase;
+}
+.postgame-comparison-headline {
+  margin-top: 6px;
+  color: var(--text);
+  font-family: Fraunces, Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.postgame-comparison-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 13px;
+}
+.postgame-comparison-stats > div + div { border-left: 1px solid color-mix(in srgb, var(--border) 70%, transparent); }
+.postgame-comparison-stats strong,
+.postgame-comparison-stats span { display: block; }
+.postgame-comparison-stats strong { color: var(--text); font-size: 18px; line-height: 1.1; }
+.postgame-comparison-stats span {
+  margin-top: 3px;
+  color: color-mix(in srgb, var(--text) 48%, transparent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.postgame-challenge-result {
+  margin: 12px -2px -1px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  color: #497e55;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.postgame-modal-share {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 20px;
+}
+.postgame-modal-share button,
+.postgame-modal-next {
+  min-height: 42px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+#btn-modal-share { background: #6fa77b; color: #122217; }
+#btn-modal-copy-result { background: color-mix(in srgb, var(--surface-strong) 82%, var(--page)); color: var(--text); }
+.postgame-modal-next { width: 100%; margin-top: 14px; background: #6fa77b; color: #122217; }
+.postgame-account-prompt {
+  width: 100%;
+  margin-top: 20px;
+  padding-top: 19px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  text-align: center;
 }
 .postgame-account-prompt h3 {
   color: var(--text);
@@ -703,7 +831,8 @@ header nav > button:not(#btn-signin):hover {
   line-height: 1.2;
 }
 .postgame-account-prompt > p {
-  margin-top: 6px;
+  max-width: 280px;
+  margin: 6px auto 0;
   color: color-mix(in srgb, var(--text) 62%, transparent);
   font-size: 12px;
   line-height: 1.45;
@@ -711,7 +840,7 @@ header nav > button:not(#btn-signin):hover {
 .postgame-account-primary {
   width: 100%;
   min-height: 42px;
-  margin-top: 13px;
+  margin-top: 14px;
   border-radius: 999px;
   background: #6fa77b;
   color: #122217;

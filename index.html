@@ -89,6 +89,10 @@
 </header>
 <div id="toast" style="z-index: 70;" class="pointer-events-none fixed left-1/2 top-20 -translate-x-1/2 scale-95 whitespace-nowrap rounded-full border border-white/10 bg-slate-800/90 px-4 py-2 text-[13px] font-medium text-slate-100 opacity-0 shadow-glass backdrop-blur-xl transition-all duration-200"></div>
 <main class="game-main mx-auto flex max-w-2xl flex-col items-center gap-7 px-5 py-10 sm:py-14">
+<div id="challenge-banner" class="challenge-banner" hidden role="status">
+<span class="challenge-banner-icon" aria-hidden="true">⚡</span>
+<div><strong id="challenge-banner-title">Challenge accepted</strong><p id="challenge-banner-copy"></p></div>
+</div>
 <div class="game-mode-switch" role="group" aria-label="Game mode">
 <button id="btn-mode-daily" class="game-mode-button" type="button" aria-pressed="true">Daily</button>
 <button id="btn-mode-practice" class="game-mode-button" type="button" aria-pressed="false">Practice</button>
@@ -108,15 +112,8 @@
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
 <div class="mt-4 flex w-full gap-2">
-<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Share Result</button>
+<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Challenge a friend</button>
 <button id="btn-copy-result" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Copy</button>
-</div>
-<div id="postgame-account-prompt" hidden class="postgame-account-prompt">
-<span class="postgame-account-eyebrow">Your game, saved</span>
-<h3 id="postgame-account-title">Keep your streak</h3>
-<p id="postgame-account-copy">Save today's result, track your stats, and continue on any device.</p>
-<button id="btn-postgame-create-account" class="postgame-account-primary">Save my result</button>
-<div class="postgame-account-secondary"><button id="btn-postgame-signin">Already have an account? Sign in</button><span aria-hidden="true">·</span><button id="btn-postgame-dismiss">Not now</button></div>
 </div>
 <button id="btn-next-practice" class="practice-next hidden w-full rounded-full px-4 py-2.5 text-[13px] font-semibold">Next Word</button>
 <button id="btn-postgame-invite" class="postgame-invite mt-2 w-full rounded-full border border-yellow-400/25 bg-yellow-400/10 px-4 py-2.5 text-[12px] font-semibold text-yellow-300 transition hover:bg-yellow-400/15">Invite a friend</button>
@@ -145,6 +142,36 @@
 </div>
 <button data-close-modal class="help-primary-action">Play</button>
 </div></div>
+<div id="modal-postgame" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-postgame-message">
+<div class="postgame-modal-card w-full rounded-3xl border border-white/10 bg-slate-900/90 shadow-glass backdrop-blur-2xl animate-rise">
+<button data-close-modal class="postgame-modal-close" aria-label="Close result">✕</button>
+<div class="postgame-modal-result">
+<p id="modal-postgame-message"></p>
+<p id="modal-postgame-word"></p>
+</div>
+<div id="postgame-comparison" class="postgame-comparison" hidden>
+<p id="postgame-comparison-kicker" class="postgame-comparison-kicker">How you did today</p>
+<p id="postgame-comparison-headline" class="postgame-comparison-headline"></p>
+<div id="postgame-comparison-stats" class="postgame-comparison-stats">
+<div><strong id="comparison-average">—</strong><span>Win avg</span></div>
+<div><strong id="comparison-percentile">—</strong><span id="comparison-percentile-label">You beat</span></div>
+<div><strong id="comparison-players">—</strong><span>Players</span></div>
+</div>
+<p id="postgame-challenge-result" class="postgame-challenge-result" hidden></p>
+</div>
+<div class="postgame-modal-share">
+<button id="btn-modal-share">Challenge a friend</button>
+<button id="btn-modal-copy-result">Copy</button>
+</div>
+<div id="postgame-account-prompt" hidden class="postgame-account-prompt">
+<h3 id="postgame-account-title">Keep your streak</h3>
+<p id="postgame-account-copy">Save today's result and track your stats on any device.</p>
+<button id="btn-postgame-create-account" class="postgame-account-primary">Save this result</button>
+<div class="postgame-account-secondary"><button id="btn-postgame-signin">Already have an account? Sign in</button><span aria-hidden="true">·</span><button id="btn-postgame-dismiss">Not now</button></div>
+</div>
+<button id="btn-modal-next-practice" class="postgame-modal-next" hidden>Next Word</button>
+</div>
+</div>
 <div id="modal-settings" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
 <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-3 flex items-center justify-between"><h2 class="text-[18px] font-semibold text-slate-50">Settings</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
@@ -267,6 +294,88 @@ sbClient.auth.onAuthStateChange((_event, session) => {
 });
 const WORD_LENGTH = 5, MAX_GUESSES = 8, BASE_MAX_HINTS = 3;
 const DEBUG_REVEAL_ANSWER = false;
+const gameAnalytics = { active: false, completed: false, abandoned: false, activeMs: 0, activeSince: null, startedAt: 0, firstGuessAt: 0, easyModeUsed: false, promptTracked: false };
+let incomingChallengeTracked = false;
+let dailyComparisonData = null;
+function trackEvent(name, params = {}) {
+  if (typeof gtag !== "function") return;
+  gtag("event", name, { game_mode: gameMode, auth_state: authUser ? "signed_in" : "anonymous", ...params });
+}
+function currentActiveMs() {
+  return gameAnalytics.activeMs + (gameAnalytics.activeSince === null ? 0 : performance.now() - gameAnalytics.activeSince);
+}
+function beginGameAnalytics() {
+  Object.assign(gameAnalytics, { active: true, completed: false, abandoned: false, activeMs: 0, activeSince: document.visibilityState === "visible" ? performance.now() : null, startedAt: performance.now(), firstGuessAt: 0, easyModeUsed: easyMode, promptTracked: false });
+  trackEvent("game_started", { easy_mode: easyMode, available_hints: maxHints() });
+}
+function pauseGameAnalytics() {
+  if (!gameAnalytics.active || gameAnalytics.activeSince === null) return;
+  gameAnalytics.activeMs += performance.now() - gameAnalytics.activeSince;
+  gameAnalytics.activeSince = null;
+}
+function resumeGameAnalytics() {
+  if (gameAnalytics.active && !gameAnalytics.completed && gameAnalytics.activeSince === null) gameAnalytics.activeSince = performance.now();
+}
+function abandonGameAnalytics(reason) {
+  if (!gameAnalytics.active || gameAnalytics.completed || gameAnalytics.abandoned) return;
+  gameAnalytics.abandoned = true;
+  pauseGameAnalytics();
+  trackEvent("game_abandoned", { reason, guesses_submitted: state.guesses.length, partial_guess: state.currentGuess.some(Boolean), active_seconds: Math.round(currentActiveMs() / 1000), easy_mode_used: gameAnalytics.easyModeUsed, hints_used: state.hintsUsed, transport_type: "beacon" });
+}
+function completeGameAnalytics(won) {
+  if (!gameAnalytics.active || gameAnalytics.completed) return;
+  gameAnalytics.completed = true;
+  pauseGameAnalytics();
+  const challenge = getIncomingChallenge();
+  let challengeResult = "none";
+  if (challenge) {
+    if (!won) challengeResult = "not_solved";
+    else if (!challenge.attempts) challengeResult = "solved";
+    else if (state.guesses.length < challenge.attempts) challengeResult = "beat";
+    else if (state.guesses.length === challenge.attempts) challengeResult = "tied";
+    else challengeResult = "missed";
+  }
+  trackEvent("game_completed", { outcome: won ? "win" : "loss", attempts: state.guesses.length, active_seconds: Math.round(currentActiveMs() / 1000), easy_mode_used: gameAnalytics.easyModeUsed, hints_used: state.hintsUsed, leaderboard_eligible: !gameAnalytics.easyModeUsed && state.hintsUsed === 0, challenge_result: challengeResult });
+}
+async function dailyResultToken(gameDate) {
+  let secret;
+  try {
+    secret = localStorage.getItem("wordstake_result_secret");
+    if (!secret) {
+      secret = crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
+      localStorage.setItem("wordstake_result_secret", secret);
+    }
+  } catch (error) {
+    secret = crypto.randomUUID ? crypto.randomUUID() : String(Math.random());
+  }
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${secret}:${gameDate}`));
+  const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("").slice(0, 32);
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+async function submitAnonymousDailyResult(result) {
+  if (gameMode !== "daily") return false;
+  try {
+    const gameDate = result.gameDate || todayUTCString();
+    const token = await dailyResultToken(gameDate);
+    const { data, error } = await sbClient.rpc("submit_daily_result", {
+      p_game_date: gameDate,
+      p_submission_token: token,
+      p_won: Boolean(result.solved),
+      p_attempts: Number(result.guessesTaken),
+      p_hints_used: Number(result.hintsUsed || 0),
+      p_easy_mode_used: Boolean(gameAnalytics.easyModeUsed),
+      p_active_seconds: Math.min(7200, Math.max(0, Math.round(currentActiveMs() / 1000)))
+    });
+    if (error) throw error;
+    trackEvent("daily_result_recorded", { inserted: data === true });
+    return true;
+  } catch (error) {
+    console.info("[wordstake] anonymous result unavailable");
+    return false;
+  }
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") pauseGameAnalytics(); else resumeGameAnalytics(); });
+window.addEventListener("pagehide", () => abandonGameAnalytics("pagehide"));
 function fallbackWordForDate(dateStr) {
   let hash = 0;
   for (let i = 0; i < dateStr.length; i++) hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
@@ -326,7 +435,12 @@ function setEasyMode(on) {
   state.guesses.forEach((g, i) => finalizeRow(i, g.letterResult || []));
   renderKeyboardStatus();
 }
-easyModeToggle.addEventListener("click", () => setEasyMode(!easyMode));
+easyModeToggle.addEventListener("click", () => {
+  const enabled = !easyMode;
+  setEasyMode(enabled);
+  if (gameAnalytics.active && !gameAnalytics.completed) gameAnalytics.easyModeUsed ||= enabled;
+  trackEvent("easy_mode_changed", { enabled, guess_number: state.guesses.length + 1 });
+});
 document.getElementById("btn-hint").addEventListener("click", useHint);
 function firstOpenCol() { let c = 0; while (c < WORD_LENGTH && state.hintedLetters[c] !== undefined) c++; return c; }
 function addLetter(letter) {
@@ -366,6 +480,7 @@ function useHint() {
   const letter = state.targetLetters[col];
   state.hintedLetters[col] = letter;
   state.hintsUsed++;
+  trackEvent("hint_used", { hint_number: state.hintsUsed, guess_number: state.guesses.length + 1 });
   state.currentGuess[col] = letter;
   renderTile(state.row, col, letter, "hint");
   showToast(`Hint: letter ${col + 1} is ${letter}`);
@@ -397,6 +512,11 @@ async function submitGuess() {
   if (!valid) { showToast("Not in word list"); shakeRow(state.row); return; }
   const { exact, present, letterResult } = scoreGuess(state.currentGuess, state.targetLetters);
   state.guesses.push({ word, exact, present, letterResult });
+  if (!gameAnalytics.firstGuessAt) {
+    gameAnalytics.firstGuessAt = performance.now();
+    trackEvent("first_guess_submitted", { seconds_to_first_guess: Math.round((gameAnalytics.firstGuessAt - gameAnalytics.startedAt) / 1000) });
+  }
+  trackEvent("guess_submitted", { guess_number: state.guesses.length, exact_count: exact, present_count: present, easy_mode: easyMode, hints_used: state.hintsUsed });
   state.submittedRows.add(state.row);
   updateKeyStatus(state.currentGuess, letterResult);
   renderKeyboardStatus();
@@ -412,6 +532,7 @@ async function submitGuess() {
 }
 function endGame(won) {
   state.gameOver = true; state.won = won;
+  completeGameAnalytics(won);
   updateHintUI(); updateGuessCounter();
   if (gameMode === "daily") {
     sessionStats.played++;
@@ -421,6 +542,7 @@ function endGame(won) {
     const result = { gameDate: todayUTCString(), word: state.target, solved: won, guessesTaken: state.guesses.length, hintsUsed: state.hintsUsed, guesses: state.guesses };
     if (authUser) submitGameResult(result);
     else savePendingGameResult(result);
+    submitAnonymousDailyResult(result).then(saved => { if (saved) loadDailyComparison(won); });
   } else if (typeof gtag === "function") {
     gtag("event", "practice_round_complete", { solved: won, guesses: state.guesses.length, hints_used: state.hintsUsed });
   }
@@ -693,6 +815,7 @@ function renderAuthUI() {
   updateHintUI();
 }
 let signinMode = "signin";
+let authEntryPoint = "header";
 function setSigninMode(mode) {
   signinMode = mode;
   document.getElementById("signin-title").textContent = mode === "signup" ? "Create Account" : "Sign In";
@@ -766,6 +889,7 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
         else localStorage.setItem("wordstake_pending_referral", referral.trim().toUpperCase());
       }
       if (!data.session) {
+        trackEvent("account_created", { source: authEntryPoint, confirmation_required: true });
         document.getElementById("signin-password").value = "";
         successEl.textContent = hasPendingGameResult()
           ? `Account created. Check ${identifier} to confirm your email, then sign in to save today's result.`
@@ -775,9 +899,11 @@ document.getElementById("signin-form").addEventListener("submit", async (e) => {
         document.getElementById("signin-toggle-mode").textContent = "Already confirmed? Sign in";
         return;
       }
+      trackEvent("account_created", { source: authEntryPoint, confirmation_required: false });
       showToast("Account created!");
     } else {
       await signInWithIdentifier(identifier, password);
+      trackEvent("account_signed_in", { source: authEntryPoint });
       showToast("Signed in!");
     }
     await checkSession();
@@ -837,7 +963,7 @@ document.getElementById("mobile-menu").addEventListener("click", event => event.
 document.addEventListener("click", closeMobileMenu);
 document.getElementById("mobile-btn-stats").addEventListener("click", () => { closeMobileMenu(); renderStats(); openModal("stats"); });
 document.getElementById("mobile-btn-settings").addEventListener("click", () => { closeMobileMenu(); openModal("settings"); });
-document.getElementById("mobile-btn-signin").addEventListener("click", () => { closeMobileMenu(); setSigninMode("signin"); openModal("signin"); });
+document.getElementById("mobile-btn-signin").addEventListener("click", () => { closeMobileMenu(); authEntryPoint = "mobile_header"; setSigninMode("signin"); openModal("signin"); });
 document.getElementById("mobile-btn-profile").addEventListener("click", () => { closeMobileMenu(); document.getElementById("profile-username").value = authProfile?.username || ""; openModal("profile"); });
 document.getElementById("mobile-btn-refer").addEventListener("click", () => { closeMobileMenu(); showReferralModal(); });
 document.getElementById("mobile-btn-signout").addEventListener("click", async () => {
@@ -884,6 +1010,7 @@ document.getElementById("btn-copy-referral").addEventListener("click", async () 
 });
 document.getElementById("btn-postgame-invite").addEventListener("click", () => {
   if (!authUser) {
+    authEntryPoint = "postgame_invite";
     setSigninMode("signup");
     openModal("signin");
     showToast("Create an account to earn bonus hints with friends");
@@ -892,16 +1019,26 @@ document.getElementById("btn-postgame-invite").addEventListener("click", () => {
   showReferralModal();
 });
 document.getElementById("btn-postgame-create-account").addEventListener("click", () => {
+  authEntryPoint = "postgame";
+  trackEvent("account_prompt_clicked", { action: "create_account", outcome: state.won ? "win" : "loss", attempts: state.guesses.length });
   setSigninMode("signup");
   openModal("signin");
 });
 document.getElementById("btn-postgame-signin").addEventListener("click", () => {
+  authEntryPoint = "postgame";
+  trackEvent("account_prompt_clicked", { action: "sign_in", outcome: state.won ? "win" : "loss", attempts: state.guesses.length });
   setSigninMode("signin");
   openModal("signin");
 });
 document.getElementById("btn-postgame-dismiss").addEventListener("click", () => {
-  document.getElementById("postgame-account-prompt").hidden = true;
+  trackEvent("account_prompt_clicked", { action: "dismiss", outcome: state.won ? "win" : "loss", attempts: state.guesses.length });
   try { localStorage.setItem("wordstake_account_prompt_dismissed", todayUTCString()); } catch (error) {}
+  closeModals();
+});
+document.getElementById("btn-modal-next-practice").addEventListener("click", () => {
+  closeModals();
+  if (typeof gtag === "function") gtag("event", "practice_next_word");
+  startNewGame("practice");
 });
 async function renderLeaderboard() {
   const listEl = document.getElementById("leaderboard-list");
@@ -926,20 +1063,75 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { toast.classList.remove("opacity-100", "scale-100"); toast.classList.add("opacity-0", "scale-95"); }, 2200);
 }
-function showPostGame(won) {
+function showPostGame(won, openDialog = true) {
   const panel = document.getElementById("post-game");
   const msg = document.getElementById("post-game-message");
   const wordEl = document.getElementById("post-game-word");
   const practice = gameMode === "practice";
-  msg.textContent = won ? `Nice one. ${state.guesses.length} / ${MAX_GUESSES}` : (practice ? "Good try. Ready for another?" : "Tomorrow is another word.");
-  wordEl.textContent = state.hintsUsed ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)` : `The word was ${state.target}.`;
+  const message = won ? `Nice one. ${state.guesses.length} / ${MAX_GUESSES}` : (practice ? "Good try. Ready for another?" : "Tomorrow is another word.");
+  const wordText = state.hintsUsed ? `The word was ${state.target}. (Used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}.)` : `The word was ${state.target}.`;
+  msg.textContent = message;
+  wordEl.textContent = wordText;
+  document.getElementById("modal-postgame-message").textContent = message;
+  document.getElementById("modal-postgame-word").textContent = wordText;
   document.getElementById("btn-next-practice").classList.toggle("hidden", !practice);
-  document.getElementById("post-game-note").textContent = practice ? "Practice as long as you like." : "Come back tomorrow";
+  document.getElementById("btn-modal-next-practice").hidden = !practice;
+  document.getElementById("post-game-note").hidden = true;
+  loadDailyComparison(won);
   renderPostGameAccountPrompt(won, practice);
   document.getElementById("btn-postgame-invite").hidden = !authUser;
   panel.classList.remove("hidden");
   panel.classList.add("flex");
-  requestAnimationFrame(() => panel.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }));
+  if (openDialog) openModal("postgame");
+}
+function localComparisonPreview(won) {
+  const localHost = location.hostname === "127.0.0.1" || location.hostname === "localhost";
+  if (!localHost || new URLSearchParams(location.search).get("preview") !== "comparison") return null;
+  return { sample_size: 47, average_attempts: 5.2, solve_rate: 72, beat_percent: won ? 82 : 0 };
+}
+function renderDailyComparison(data, won) {
+  const panel = document.getElementById("postgame-comparison");
+  const stats = document.getElementById("postgame-comparison-stats");
+  const challengeResult = document.getElementById("postgame-challenge-result");
+  const sampleSize = Number(data?.sample_size || 0);
+  if (!data || sampleSize < 1) { panel.hidden = true; return; }
+  dailyComparisonData = data;
+  panel.hidden = false;
+  stats.hidden = sampleSize < 5;
+  document.getElementById("postgame-comparison-headline").textContent = sampleSize < 5
+    ? "You're one of today's first players."
+    : won ? `You beat ${Math.round(Number(data.beat_percent || 0))}% of today's players.` : `${Math.round(Number(data.solve_rate || 0))}% have solved today's word.`;
+  document.getElementById("comparison-average").textContent = data.average_attempts ? Number(data.average_attempts).toFixed(1) : "—";
+  document.getElementById("comparison-percentile").textContent = won ? `${Math.round(Number(data.beat_percent || 0))}%` : `${Math.round(Number(data.solve_rate || 0))}%`;
+  document.getElementById("comparison-percentile-label").textContent = won ? "You beat" : "Solved";
+  document.getElementById("comparison-players").textContent = sampleSize;
+  const challenge = getIncomingChallenge();
+  challengeResult.hidden = !challenge;
+  if (challenge) {
+    if (!won) challengeResult.textContent = "Your friend's challenge lives to see another day.";
+    else if (!challenge.attempts) challengeResult.textContent = "You solved the word that stumped your friend.";
+    else if (state.guesses.length < challenge.attempts) challengeResult.textContent = `You beat your friend's score by ${challenge.attempts - state.guesses.length}.`;
+    else if (state.guesses.length === challenge.attempts) challengeResult.textContent = "You tied your friend's score.";
+    else challengeResult.textContent = `You solved it—${state.guesses.length - challenge.attempts} behind your friend's score.`;
+  }
+}
+async function loadDailyComparison(won) {
+  const panel = document.getElementById("postgame-comparison");
+  panel.hidden = true;
+  dailyComparisonData = null;
+  if (gameMode !== "daily") return;
+  const requestedTarget = state.target;
+  const preview = localComparisonPreview(won);
+  if (preview) { renderDailyComparison(preview, won); return; }
+  try {
+    const { data, error } = await sbClient.rpc("get_daily_comparison", { p_game_date: todayUTCString(), p_attempts: won ? state.guesses.length : null });
+    if (error) throw error;
+    if (state.target !== requestedTarget || !state.gameOver || gameMode !== "daily") return;
+    renderDailyComparison(Array.isArray(data) ? data[0] : data, won);
+  } catch (error) {
+    console.info("[wordstake] daily comparison unavailable");
+    panel.hidden = true;
+  }
 }
 function renderPostGameAccountPrompt(won, practice) {
   const prompt = document.getElementById("postgame-account-prompt");
@@ -948,6 +1140,10 @@ function renderPostGameAccountPrompt(won, practice) {
   const shouldShow = !practice && !authUser && hasPendingGameResult() && !dismissedToday;
   prompt.hidden = !shouldShow;
   if (!shouldShow) return;
+  if (!gameAnalytics.promptTracked) {
+    gameAnalytics.promptTracked = true;
+    trackEvent("account_prompt_seen", { outcome: won ? "win" : "loss", attempts: state.guesses.length });
+  }
   document.getElementById("postgame-account-title").textContent = won ? "Keep your streak" : "Track your progress";
   document.getElementById("postgame-account-copy").textContent = won
     ? "Save today's win, track your stats, and continue on any device."
@@ -967,14 +1163,48 @@ function hidePostGame() {
   panel.classList.remove("flex");
   document.getElementById("postgame-account-prompt").hidden = true;
 }
+function dailyGameNumber() { return Math.floor(Date.parse(todayUTCString() + "T00:00:00Z") / 86400000); }
+function buildChallengeUrl() {
+  const url = new URL(location.origin + location.pathname);
+  url.searchParams.set("challenge", state.won ? String(state.guesses.length) : "solve");
+  url.searchParams.set("day", String(dailyGameNumber()));
+  return url.toString();
+}
+function getIncomingChallenge() {
+  const params = new URLSearchParams(location.search);
+  if (params.get("day") !== String(dailyGameNumber())) return null;
+  const raw = params.get("challenge");
+  if (raw === "solve") return { attempts: null };
+  const attempts = Number(raw);
+  return Number.isInteger(attempts) && attempts >= 1 && attempts <= MAX_GUESSES ? { attempts } : null;
+}
+function renderIncomingChallenge() {
+  const banner = document.getElementById("challenge-banner");
+  const challenge = gameMode === "daily" ? getIncomingChallenge() : null;
+  banner.hidden = !challenge;
+  if (!challenge) return;
+  document.getElementById("challenge-banner-title").textContent = "A friend challenged you";
+  document.getElementById("challenge-banner-copy").textContent = challenge.attempts
+    ? `They solved today's word in ${challenge.attempts}. Can you beat them?`
+    : "Today's word stumped them. Can you solve it?";
+  if (!incomingChallengeTracked) {
+    incomingChallengeTracked = true;
+    trackEvent("challenge_received", { target_attempts: challenge.attempts || 0 });
+  }
+}
 function buildShareText() {
   const lines = state.guesses.map(g => "🟩".repeat(g.exact) + "🟨".repeat(g.present) + "⬛".repeat(WORD_LENGTH - g.exact - g.present));
   const hintNote = state.hintsUsed ? ` (${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""})` : "";
-  const gameDay = Math.floor(Date.parse(todayUTCString() + "T00:00:00Z") / 86400000);
+  const gameDay = dailyGameNumber();
   const heading = gameMode === "practice"
     ? `Wordstake Practice ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`
     : `Wordstake #${gameDay} ${state.won ? state.guesses.length : "X"}/${MAX_GUESSES}${hintNote}`;
-  return [heading, ...lines, "Can you beat me?", "https://word-stake.com"].join("\n");
+  const beatPercent = Number(dailyComparisonData?.sample_size || 0) >= 5 ? Math.round(Number(dailyComparisonData?.beat_percent || 0)) : null;
+  const challengeLine = state.won
+    ? (beatPercent !== null ? `I beat ${beatPercent}% of players today. Can you beat me?` : `I got it in ${state.guesses.length}. Can you beat me?`)
+    : "This one got me. Can you solve it?";
+  const destination = gameMode === "daily" ? buildChallengeUrl() : "https://word-stake.com";
+  return [heading, ...lines, "", challengeLine, destination].join("\n");
 }
 function handleKey(key) {
   if (key === "ENTER") return submitGuess();
@@ -1037,25 +1267,40 @@ document.addEventListener("keydown", (e) => {
   if (/^[A-Z]$/.test(k)) return handleKey(k);
 });
 document.addEventListener("click", (e) => { const btn = e.target.closest("button"); if (btn) btn.blur(); });
-document.getElementById("btn-copy-result").addEventListener("click", async () => {
+async function copyResult() {
   const text = buildShareText();
-  try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
-  catch { showToast("Copy failed. Try again."); }
-});
-document.getElementById("btn-share").addEventListener("click", async () => {
+  const details = { method: "copy", outcome: state.won ? "win" : "loss", attempts: state.guesses.length, leaderboard_eligible: !gameAnalytics.easyModeUsed && state.hintsUsed === 0 };
+  trackEvent("share_opened", details);
+  try { await navigator.clipboard.writeText(text); trackEvent("share_completed", details); showToast("Result copied!"); }
+  catch { trackEvent("share_failed", details); showToast("Copy failed. Try again."); }
+}
+async function shareResult() {
   const text = buildShareText();
+  const details = { method: navigator.share ? "native_share" : "copy_fallback", outcome: state.won ? "win" : "loss", attempts: state.guesses.length, leaderboard_eligible: !gameAnalytics.easyModeUsed && state.hintsUsed === 0 };
+  trackEvent("share_opened", details);
   if (navigator.share) {
-    try { await navigator.share({ title: "Wordstake", text }); return; }
-    catch (error) { if (error.name === "AbortError") return; }
+    try { await navigator.share({ title: "Wordstake", text }); trackEvent("share_completed", details); return; }
+    catch (error) { if (error.name === "AbortError") { trackEvent("share_cancelled", details); return; } }
   }
-  try { await navigator.clipboard.writeText(text); showToast("Result copied!"); }
-  catch { showToast("Sharing isn't available here"); }
-});
-const modals = { help: document.getElementById("modal-help"), settings: document.getElementById("modal-settings"), signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
+  try { await navigator.clipboard.writeText(text); trackEvent("share_completed", { ...details, method: "copy_fallback" }); showToast("Result copied!"); }
+  catch { trackEvent("share_failed", details); showToast("Sharing isn't available here"); }
+}
+document.getElementById("btn-copy-result").addEventListener("click", copyResult);
+document.getElementById("btn-modal-copy-result").addEventListener("click", copyResult);
+document.getElementById("btn-share").addEventListener("click", shareResult);
+document.getElementById("btn-modal-share").addEventListener("click", shareResult);
+const modals = { help: document.getElementById("modal-help"), postgame: document.getElementById("modal-postgame"), settings: document.getElementById("modal-settings"), signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
-function openModal(name) { mobileGuessInput.blur(); backdrop.classList.remove("hidden"); modals[name].classList.remove("hidden"); modals[name].classList.add("flex"); }
-function closeModals() { backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
-document.getElementById("btn-signin").addEventListener("click", () => { setSigninMode("signin"); openModal("signin"); });
+function openModal(name) {
+  mobileGuessInput.blur();
+  Object.values(modals).forEach(modal => { modal.classList.add("hidden"); modal.classList.remove("flex"); });
+  document.body.classList.add("modal-open");
+  backdrop.classList.remove("hidden");
+  modals[name].classList.remove("hidden");
+  modals[name].classList.add("flex");
+}
+function closeModals() { document.body.classList.remove("modal-open"); backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
+document.getElementById("btn-signin").addEventListener("click", () => { authEntryPoint = "header"; setSigninMode("signin"); openModal("signin"); });
 document.getElementById("btn-help").addEventListener("click", () => openModal("help"));
 document.getElementById("btn-settings").addEventListener("click", () => openModal("settings"));
 document.getElementById("btn-leaderboard").addEventListener("click", () => { openModal("leaderboard"); renderLeaderboard(); });
@@ -1069,23 +1314,26 @@ document.addEventListener("keydown", event => {
 });
 document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", closeModals));
 async function startNewGame(mode = gameMode) {
+  const previousMode = gameMode;
+  if (gameAnalytics.active && !gameAnalytics.completed) abandonGameAnalytics(mode === previousMode ? "new_game" : "mode_switch");
   gameMode = mode;
   renderGameMode();
+  renderIncomingChallenge();
   const target = gameMode === "practice" ? randomPracticeWord() : await fetchDailyWord();
+  const existing = gameMode === "daily" ? await fetchTodaysCompletedGame() : null;
   state = { target, targetLetters: target.split(""), row: 0, col: 0, currentGuess: Array(WORD_LENGTH).fill(""), guesses: [], gameOver: false, won: false, keyStatus: {}, submittedRows: new Set(), manualMarks: {}, hintsUsed: 0, hintedLetters: {} };
   buildGrid(); buildSidebar(); buildKeyboard(); updateGuessCounter(); updateHintUI(); hidePostGame();
   setEasyMode(easyMode);
   if (usesNativeKeyboard()) setTimeout(focusMobileKeyboard, 250);
   if (DEBUG_REVEAL_ANSWER) console.log("%c[dev] target word:", "color:#16a34a", state.target);
-  if (gameMode === "daily") {
-    const existing = await fetchTodaysCompletedGame();
-    if (existing) replayCompletedGame(existing);
-  }
+  if (existing) replayCompletedGame(existing);
+  else beginGameAnalytics();
   if (!referralLandingHandled) {
     referralLandingHandled = true;
     const referral = new URLSearchParams(location.search).get("ref");
     if (referral && !authUser) {
       document.getElementById("signin-referral").value = referral.toUpperCase();
+      authEntryPoint = "referral_link";
       setSigninMode("signup"); openModal("signin");
     }
   }
@@ -1111,7 +1359,7 @@ function replayCompletedGame(gameRow) {
   state.hintsUsed = gameRow.hints_used || 0;
   updateHintUI(); updateGuessCounter();
   showToast(state.hintsUsed ? `You played today and used ${state.hintsUsed} hint${state.hintsUsed > 1 ? "s" : ""}. Come back tomorrow!` : "You already played today. Come back tomorrow!");
-  showPostGame(gameRow.won);
+  showPostGame(gameRow.won, false);
 }
 setTheme(document.documentElement.dataset.theme || "dark");
 document.getElementById("btn-mode-daily").addEventListener("click", () => {

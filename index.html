@@ -112,7 +112,7 @@
 <p id="post-game-message" class="text-center text-[19px] font-semibold tracking-tight text-slate-50"></p>
 <p id="post-game-word" class="text-center text-[13px] text-slate-400"></p>
 <div class="mt-4 flex w-full gap-2">
-<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Challenge a friend</button>
+<button id="btn-share" class="flex-1 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950 transition hover:bg-brand-400">Share</button>
 <button id="btn-copy-result" class="flex-1 rounded-full bg-white/[0.08] px-4 py-2.5 text-[13px] font-semibold text-slate-100 transition hover:bg-white/[0.12]">Copy</button>
 </div>
 <button id="btn-next-practice" class="practice-next hidden w-full rounded-full px-4 py-2.5 text-[13px] font-semibold">Next Word</button>
@@ -136,7 +136,7 @@
 <ol class="help-steps">
 <li class="help-step"><span class="help-step-number">1</span><div class="help-step-body"><h3>Make a guess</h3><div class="help-tile-row" aria-hidden="true"><span>C</span><span>R</span><span>A</span><span>N</span><span>E</span></div><p>Five letters. Eight tries.</p></div></li>
 <li class="help-step"><span class="help-step-number">2</span><div class="help-step-body"><h3>Read the totals</h3><div class="help-score-demo" aria-label="Example score: 2 exact and 1 present"><span class="help-score help-score-exact"><i aria-hidden="true"></i><strong>2</strong> Exact</span><span class="help-score help-score-present"><i aria-hidden="true"></i><strong>1</strong> Present</span></div><p>You see totals—not which letters matched.</p></div></li>
-<li class="help-step"><span class="help-step-number">3</span><div class="help-step-body"><h3>Mark your clues</h3><div class="help-mark-cycle" aria-hidden="true"><span class="help-demo-tile">A</span><b>→</b><span class="help-demo-tile is-present">A</span><b>→</b><span class="help-demo-tile is-exact">A</span><b>→</b><span class="help-demo-tile is-absent">A</span></div><p>Tap a submitted tile to cycle your own notes.</p></div></li>
+<li class="help-step"><span class="help-step-number">3</span><div class="help-step-body"><h3>Mark your clues</h3><div class="help-mark-cycle" aria-hidden="true"><span class="help-demo-tile">A</span><b>→</b><span class="help-demo-tile is-present">A</span><b>→</b><span class="help-demo-tile is-exact">A</span><b>→</b><span class="help-demo-tile is-excluded">A</span><b>→</b><span class="help-demo-tile is-absent">A</span></div><p>Yellow, green, red, then neutral. Your keyboard matches your notes.</p></div></li>
 </ol>
 <details class="help-more"><summary>More tips</summary><div><p><strong>Daily</strong> counts toward your streak. <strong>Practice</strong> lets you play unlimited words.</p><p><strong>Hint</strong> reveals one letter. <strong>Easy Mode</strong> shows every matching tile.</p></div></details>
 </div>
@@ -160,8 +160,15 @@
 <p id="postgame-challenge-result" class="postgame-challenge-result" hidden></p>
 </div>
 <div class="postgame-modal-share">
-<button id="btn-modal-share">Challenge a friend</button>
+<button id="btn-modal-share" aria-haspopup="menu" aria-expanded="false">Share</button>
 <button id="btn-modal-copy-result">Copy</button>
+</div>
+<div id="share-menu" class="share-menu" role="menu" hidden>
+<button type="button" role="menuitem" data-share-platform="email"><span aria-hidden="true">✉</span>Email</button>
+<button type="button" role="menuitem" data-share-platform="facebook"><span class="share-platform-mark" aria-hidden="true">f</span>Facebook</button>
+<button type="button" role="menuitem" data-share-platform="x"><span class="share-platform-mark" aria-hidden="true">𝕏</span>X</button>
+<button type="button" role="menuitem" data-share-platform="pinterest"><span class="share-platform-mark" aria-hidden="true">P</span>Pinterest</button>
+<button type="button" role="menuitem" data-share-platform="copy"><span aria-hidden="true">🔗</span>Copy link</button>
 </div>
 <div id="postgame-account-prompt" hidden class="postgame-account-prompt">
 <h3 id="postgame-account-title">Keep your streak</h3>
@@ -206,11 +213,11 @@
 <form id="profile-form" class="flex flex-col gap-2.5"><label for="profile-username" class="text-[12px] text-slate-400">Username</label><input id="profile-username" required minlength="3" maxlength="24" class="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-[14px] text-slate-100 outline-none focus:border-brand-400/60"/><p id="profile-error" class="hidden text-[12px] text-red-400"></p><button class="mt-2 rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Save</button></form>
 </div></div>
 <div id="modal-referral" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-<div class="w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
+<div class="referral-modal-card w-full max-w-sm rounded-3xl border border-white/10 bg-slate-900/90 p-7 shadow-glass backdrop-blur-2xl animate-rise">
 <div class="mb-4 flex items-center justify-between"><h2 class="text-[17px] font-semibold text-slate-50">Refer a Friend</h2><button data-close-modal class="rounded-full p-1 text-slate-500 hover:text-slate-200">✕</button></div>
 <p class="text-[13px] leading-relaxed text-slate-400">When a new player signs up with your link, you both permanently get one extra hint per game.</p>
 <p id="referral-status" class="mt-3 hidden rounded-xl border border-brand-400/20 bg-brand-500/10 px-3 py-2 text-center text-[12px] font-semibold text-brand-400"></p>
-<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p class="text-[10px] uppercase tracking-wide text-slate-500">Your referral code</p><p id="referral-code" class="mt-1 font-mono text-lg font-semibold tracking-wider text-brand-400">Not ready</p></div>
+<div class="referral-code-card"><span class="referral-code-label">Your referral code</span><strong id="referral-code" class="referral-code-value">Not ready</strong></div>
 <button id="btn-copy-referral" class="mt-3 w-full rounded-full bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-slate-950">Copy Invite Link</button>
 </div></div>
 <div id="modal-leaderboard" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
@@ -661,8 +668,9 @@ function cycleManualMark(row, col) {
   if (easyMode || !state.submittedRows.has(row)) return;
   const key = manualMarkKey(row, col);
   const current = state.manualMarks[key] || "gray";
-  state.manualMarks[key] = current === "gray" ? "yellow" : current === "yellow" ? "green" : "gray";
+  state.manualMarks[key] = current === "gray" ? "yellow" : current === "yellow" ? "green" : current === "green" ? "red" : "gray";
   finalizeRow(row, state.guesses[row]?.letterResult || []);
+  renderKeyboardStatus();
 }
 // Rebuilds the full result-color class set from scratch every time
 // instead of patching an already changed class list. A partial
@@ -671,7 +679,7 @@ function cycleManualMark(row, col) {
 // removal list. Same bug class as any "two colors fighting over cascade
 // order" issue: always fully clear every possible color class first.
 function finalizeRow(row, letterResult) {
-  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700", "cursor-pointer"];
+  const COLOR_CLASSES = ["border-slate-400", "bg-slate-800", "animate-pop", "border-yellow-400", "bg-yellow-400/10", "bg-yellow-400", "text-slate-950", "bg-brand-500", "border-brand-400", "border-slate-600", "border-slate-700", "manual-mark-red", "cursor-pointer"];
   for (let c = 0; c < WORD_LENGTH; c++) {
     const tile = document.getElementById(`tile-${row}-${c}`);
     if (!tile) continue;
@@ -687,6 +695,7 @@ function finalizeRow(row, letterResult) {
       const mark = state.manualMarks[manualMarkKey(row, c)] || "gray";
       if (mark === "yellow") tile.classList.add("bg-yellow-400", "border-yellow-400", "text-slate-950", "shadow-key", "cursor-pointer");
       else if (mark === "green") tile.classList.add("bg-brand-500", "border-brand-400", "text-slate-950", "shadow-key", "cursor-pointer");
+      else if (mark === "red") tile.classList.add("manual-mark-red", "shadow-key", "cursor-pointer");
       else tile.classList.add("bg-slate-800", "border-slate-600", "shadow-key", "cursor-pointer");
       tile.tabIndex = 0;
       tile.setAttribute("aria-label", `${tile.textContent}, marked ${mark}. Activate to change the mark.`);
@@ -738,13 +747,31 @@ function buildKeyboard() {
 }
 function renderKeyboardStatus() {
   const colorFor = { correct: "bg-brand-500 text-slate-950 hover:bg-brand-500", present: "bg-yellow-400 text-slate-950 hover:bg-yellow-400", absent: "bg-slate-900 text-slate-600 hover:bg-slate-900" };
+  const manualKeyMarks = new Map();
+  const markRank = { yellow: 1, green: 2, red: 3 };
+  if (!easyMode) Object.entries(state.manualMarks).forEach(([position, mark]) => {
+    if (!markRank[mark]) return;
+    const [row, col] = position.split("-").map(Number);
+    const letter = state.guesses[row]?.word?.[col];
+    const currentMark = manualKeyMarks.get(letter);
+    if (letter && (!currentMark || markRank[mark] > markRank[currentMark])) manualKeyMarks.set(letter, mark);
+  });
   document.querySelectorAll("#keyboard button[data-key]").forEach(btn => {
     const key = btn.dataset.key;
     // Real system feedback only ever renders in Easy Mode. Hard Mode
     // tracks state.keyStatus underneath (so it's ready the moment the
     // player switches modes) but never shows it on the keyboard.
     const status = easyMode ? state.keyStatus[key] : undefined;
-    btn.className = keyBaseClass(key) + " " + (status ? colorFor[status] : "bg-slate-800 shadow-key hover:bg-slate-700");
+    const manualMark = manualKeyMarks.get(key);
+    const manualClass = manualMark ? `keyboard-manual-${manualMark}` : "";
+    btn.className = keyBaseClass(key) + " " + (status ? colorFor[status] : manualClass || "bg-slate-800 shadow-key hover:bg-slate-700");
+    if (manualMark) {
+      btn.setAttribute("aria-label", `${key}, marked ${manualMark}`);
+      btn.title = `Marked ${manualMark} — still available`;
+    } else {
+      btn.removeAttribute("aria-label");
+      btn.removeAttribute("title");
+    }
   });
 }
 function updateGuessCounter() {
@@ -1274,21 +1301,53 @@ async function copyResult() {
   try { await navigator.clipboard.writeText(text); trackEvent("share_completed", details); showToast("Result copied!"); }
   catch { trackEvent("share_failed", details); showToast("Copy failed. Try again."); }
 }
-async function shareResult() {
+const shareMenu = document.getElementById("share-menu");
+const modalShareButton = document.getElementById("btn-modal-share");
+function closeShareMenu() {
+  shareMenu.hidden = true;
+  modalShareButton.setAttribute("aria-expanded", "false");
+}
+function shareResult(event) {
+  event?.stopPropagation();
+  const willOpen = shareMenu.hidden;
+  closeShareMenu();
+  if (!willOpen) return;
+  shareMenu.hidden = false;
+  modalShareButton.setAttribute("aria-expanded", "true");
+  trackEvent("share_opened", { method: "share_menu", outcome: state.won ? "win" : "loss", attempts: state.guesses.length });
+  shareMenu.querySelector("button")?.focus();
+}
+async function shareToPlatform(platform) {
+  const url = buildChallengeUrl();
   const text = buildShareText();
-  const details = { method: navigator.share ? "native_share" : "copy_fallback", outcome: state.won ? "win" : "loss", attempts: state.guesses.length, leaderboard_eligible: !gameAnalytics.easyModeUsed && state.hintsUsed === 0 };
-  trackEvent("share_opened", details);
-  if (navigator.share) {
-    try { await navigator.share({ title: "Wordstake", text }); trackEvent("share_completed", details); return; }
-    catch (error) { if (error.name === "AbortError") { trackEvent("share_cancelled", details); return; } }
+  const encodedUrl = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(text);
+  const destinations = {
+    email: `mailto:?subject=${encodeURIComponent("Can you beat my Wordstake score?")}&body=${encodedText}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    x: `https://twitter.com/intent/tweet?text=${encodedText}`,
+    pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`
+  };
+  closeShareMenu();
+  trackEvent("share_platform_selected", { platform, outcome: state.won ? "win" : "loss", attempts: state.guesses.length });
+  if (platform === "copy") {
+    try { await navigator.clipboard.writeText(url); trackEvent("share_completed", { method: "copy_link" }); showToast("Challenge link copied!"); }
+    catch { trackEvent("share_failed", { method: "copy_link" }); showToast("Copy failed. Try again."); }
+    return;
   }
-  try { await navigator.clipboard.writeText(text); trackEvent("share_completed", { ...details, method: "copy_fallback" }); showToast("Result copied!"); }
-  catch { trackEvent("share_failed", details); showToast("Sharing isn't available here"); }
+  window.open(destinations[platform], "_blank", "noopener,noreferrer");
+  trackEvent("share_completed", { method: platform });
 }
 document.getElementById("btn-copy-result").addEventListener("click", copyResult);
 document.getElementById("btn-modal-copy-result").addEventListener("click", copyResult);
 document.getElementById("btn-share").addEventListener("click", shareResult);
 document.getElementById("btn-modal-share").addEventListener("click", shareResult);
+shareMenu.addEventListener("click", event => {
+  event.stopPropagation();
+  const option = event.target.closest("[data-share-platform]");
+  if (option) shareToPlatform(option.dataset.sharePlatform);
+});
+document.addEventListener("click", closeShareMenu);
 const modals = { help: document.getElementById("modal-help"), postgame: document.getElementById("modal-postgame"), settings: document.getElementById("modal-settings"), signin: document.getElementById("modal-signin"), leaderboard: document.getElementById("modal-leaderboard"), stats: document.getElementById("modal-stats"), profile: document.getElementById("modal-profile"), referral: document.getElementById("modal-referral") };
 const backdrop = document.getElementById("modal-backdrop");
 function openModal(name) {
@@ -1299,7 +1358,7 @@ function openModal(name) {
   modals[name].classList.remove("hidden");
   modals[name].classList.add("flex");
 }
-function closeModals() { document.body.classList.remove("modal-open"); backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
+function closeModals() { closeShareMenu(); document.body.classList.remove("modal-open"); backdrop.classList.add("hidden"); Object.values(modals).forEach(m => { m.classList.add("hidden"); m.classList.remove("flex"); }); }
 document.getElementById("btn-signin").addEventListener("click", () => { authEntryPoint = "header"; setSigninMode("signin"); openModal("signin"); });
 document.getElementById("btn-help").addEventListener("click", () => openModal("help"));
 document.getElementById("btn-settings").addEventListener("click", () => openModal("settings"));

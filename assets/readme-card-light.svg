@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="200" viewBox="0 0 640 200" role="img" aria-labelledby="t d">
+  <title id="t">Wordstake</title><desc id="d">Minimal word tile illustration.</desc>
+  <rect x="1" y="1" width="638" height="198" rx="22" fill="#f7f7f5" stroke="#e2e2de" stroke-width="2"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"><text x="34" y="57" fill="#b96247" font-size="13" font-weight="600" letter-spacing="2.4">MADE FOR FUN</text><text x="34" y="104" fill="#1d1d1f" font-size="31" font-weight="650">Wordstake</text><text x="34" y="137" fill="#6e6e73" font-size="15">eight tries, only match counts</text></g>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="20" font-weight="650" text-anchor="middle"><rect x="410" y="77" width="47" height="47" rx="9" fill="#ecece8" stroke="#9b9b9f" stroke-width="2"/><text x="433.5" y="108" fill="#1d1d1f">C</text><rect x="466" y="77" width="47" height="47" rx="9" fill="#718a78"/><text x="489.5" y="108" fill="#fff">R</text><rect x="522" y="77" width="47" height="47" rx="9" fill="#c99b45"/><text x="545.5" y="108" fill="#fff">A</text><rect x="578" y="77" width="47" height="47" rx="9" fill="#ecece8" stroke="#9b9b9f" stroke-width="2"/><text x="601.5" y="108" fill="#1d1d1f">N</text></g>
+</svg>
+
